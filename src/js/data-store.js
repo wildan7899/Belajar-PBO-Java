@@ -1,0 +1,3129 @@
+/**
+ * data-store.js - Static offline data store for materials and question bank.
+ * Ensures zero-dependency, 100% offline access both via HTTP server and direct file:// protocol.
+ */
+
+export const INITIAL_MATERIALS = [
+  {
+    "id": "bab-1",
+    "title": "Bab 1: Pengantar PBO & Bahasa Java",
+    "shortDescription": "Paradigma OOP vs Prosedural, kompilasi Java (javac, java, JVM, Bytecode), konsep Class, Object, Atribut, dan Method.",
+    "sourceFiles": [
+      "Materi PBO-1 dan 2 Pengantar Pemrograman Berorientasi Objek, PBO Pada Java_copy (1).pdf",
+      "Eng_PBO2_OOP and Java Introduction_copy (3).pdf"
+    ],
+    "subtopics": [
+      {
+        "id": "sub-1-1",
+        "title": "Paradigma Prosedural vs Berorientasi Objek",
+        "definition": "Pemrograman berorientasi objek memandang perangkat lunak sebagai kumpulan objek yang berinteraksi satu sama lain, menggabungkan data (atribut) dan perilaku (method) dalam satu kesatuan.",
+        "content": "Pada pemrograman prosedural, fokus utama adalah pada fungsi atau prosedur yang memanipulasi data terpisah. Hal ini menyebabkan kesulitan pengelolaan pada sistem berskala besar. Sebaliknya, PBO memodelkan entitas dunia nyata ke dalam objek, memberikan modularitas, reusabilitas, dan kemudahan pemeliharaan.",
+        "syntax": "// Contoh pembuatan class dan instansiasi objek\npublic class Mobil {\n    String warna;\n    int tahunProduksi;\n\n    void maju() {\n        System.out.println(\"Mobil bergerak maju\");\n    }\n}",
+        "explanation": "Class Mobil bertindak sebagai cetakan (blueprint), sedangkan instance nyata yang dibuat dengan kata kunci new adalah object.",
+        "examSummary": "PBO berfokus pada objek (data + perilaku), sedangkan prosedural berfokus pada urutan fungsi/algoritma.",
+        "commonMistakes": "Menganggap class dan object adalah hal yang sama. Class adalah blueprint; object adalah wujud nyata di memori.",
+        "sourceLocation": "Materi PBO-1 dan 2 hal. 6-15; Eng_PBO2 hal. 2-7"
+      },
+      {
+        "id": "sub-1-2",
+        "title": "Arsitektur Java: Kompiler, Bytecode, dan JVM",
+        "definition": "Java menggunakan pendekatan dua tahap: kode program (.java) dikompilasi oleh javac menjadi Bytecode (.class) yang arsitektur-netral, kemudian dieksekusi oleh Java Virtual Machine (JVM).",
+        "content": "Prinsip utama Java adalah \"Write Once, Run Anywhere\" (WORA). Komputer hanya memahami sinyal biner (0 dan 1). Kompiler C menghasilkan kode mesin khusus platform, sedangkan javac menghasilkan Bytecode yang dapat dijalankan di OS apa pun asalkan memiliki JVM.",
+        "syntax": "// Perintah terminal kompilasi dan eksekusi\n// 1. Kompilasi:\njavac ProgramUtama.java\n\n// 2. Eksekusi:\njava ProgramUtama",
+        "explanation": "javac menghasilkan ProgramUtama.class. Perintah java menjalankan bytecode tersebut di dalam JVM.",
+        "examSummary": "javac menghasilkan file .class (bytecode), java mengeksekusi bytecode via JVM.",
+        "commonMistakes": "Menjalankan java dengan ekstensi file seperti \"java ProgramUtama.class\" (seharusnya cukup \"java ProgramUtama\").",
+        "sourceLocation": "Materi PBO-1 dan 2 hal. 2-5"
+      },
+      {
+        "id": "sub-1-3",
+        "title": "Anatomi Class, Object, Atribut & Method",
+        "definition": "Class adalah cetakan deskripsi konsep, sedangkan object adalah instance nyata. Atribut merepresentasikan state (kondisi/data), sedangkan method merepresentasikan behavior (perilaku/aksi).",
+        "content": "Setiap objek memiliki atribut dan method. Contoh pada mobil: atribut meliputi warna, roda, kecepatan; method meliputi maju(), rem(), belok(). Method utama yang menjadi titik awal eksekusi program adalah public static void main(String[] args).",
+        "syntax": "public class Mobil {\n    // Atribut (State)\n    String warna;\n    int kecepatan;\n\n    // Method (Behavior)\n    void tambahKecepatan(int akselerasi) {\n        kecepatan += akselerasi;\n    }\n\n    public static void main(String[] args) {\n        // Instansiasi Objek\n        Mobil mobilSaya = new Mobil();\n        mobilSaya.warna = \"Merah\";\n        mobilSaya.tambahKecepatan(20);\n        System.out.println(mobilSaya.warna + \" kecepatan: \" + mobilSaya.kecepatan);\n    }\n}",
+        "explanation": "Operator titik (.) digunakan untuk mengakses atribut atau memanggil method dari suatu objek yang telah diinstansiasi.",
+        "examSummary": "Keyword new digunakan untuk membuat objek. Akses anggota menggunakan operator titik (.).",
+        "commonMistakes": "Lupa menulis kata kunci new saat inisialisasi objek (misal: Mobil m; m.warna = \"Merah\"; menyebabkan NullPointerException).",
+        "sourceLocation": "Materi PBO-1 dan 2 hal. 9-25; Eng_PBO2 hal. 8-20"
+      }
+    ]
+  },
+  {
+    "id": "bab-2",
+    "title": "Bab 2: Statements, Expressions, Variabel, Tipe Data & Operator",
+    "shortDescription": "Grammar Java, tipe data primitif vs referensi, copy trap, immutability string, static modifier, type casting, dan operator.",
+    "sourceFiles": [
+      "PBO-4 JAVA Pernyataan, ekspresi, variabel, tipe data, dll_copy (1).pdf",
+      "PBO_3_StatementsExpressionsVariablesDataTypesOperators_copy (1).pdf"
+    ],
+    "subtopics": [
+      {
+        "id": "sub-2-1",
+        "title": "Statements, Expressions & Keywords",
+        "definition": "Statement adalah instruksi lengkap yang memerintahkan komputer melakukan aksi (diakhiri titik koma). Expression adalah kombinasi nilai, variabel, dan operator yang mengevaluasi ke suatu nilai.",
+        "content": "Java memiliki kata kunci terdaftar (reserved keywords) yang tidak boleh dijadikan nama variabel atau method, seperti abstract, boolean, class, default, extends, final, public, static, void, dll.",
+        "syntax": "int x = 10;        // Statement deklarasi & penugasan\nx = x + 5;         // x + 5 adalah ekspresi; seluruh baris adalah statement",
+        "explanation": "Pernyataan (statement) membentuk aksi program, sedangkan ekspresi menghasilkan nilai yang dapat disimpan atau dievaluasi.",
+        "examSummary": "Statement diakhiri titik koma (;). Reserved keyword tidak boleh dipakai sebagai identifier.",
+        "commonMistakes": "Menggunakan huruf besar-kecil yang salah pada keyword Java yang bersifat case-sensitive.",
+        "sourceLocation": "PBO-4 hal. 3-6; PBO_3 hal. 6-8"
+      },
+      {
+        "id": "sub-2-2",
+        "title": "Scope Variabel: Local, Instance, dan Static (Class Variable)",
+        "definition": "Local variable berada di dalam method tanpa nilai default. Instance variable milik objek individual dengan nilai default. Static variable milik class dan dibagi bersama oleh seluruh objek.",
+        "content": "Modifier static mengikat suatu atribut atau method ke level class. Instance variable baru dibuat saat objek diinstansiasi. Local variable harus diinisialisasi sebelum digunakan atau akan memicu compile error.",
+        "syntax": "public class AkunBank {\n    public static int totalAkun = 0; // Class variable (static)\n    private double saldo;            // Instance variable\n\n    public void deposit(double jumlah) { // Local variable: jumlah\n        double bonus = 5000;             // Local variable\n        saldo += (jumlah + bonus);\n    }\n}",
+        "explanation": "Variabel static dapat diakses via AkunBank.totalAkun tanpa perlu membuat objek.",
+        "examSummary": "static = milik class bersama; instance = milik tiap objek; local = hanya di dalam method/blok.",
+        "commonMistakes": "Mencoba mengakses instance variable langsung dari method static tanpa objek.",
+        "sourceLocation": "PBO_3 hal. 9-14; PBO-4 hal. 8-15"
+      },
+      {
+        "id": "sub-2-3",
+        "title": "Tipe Primitif vs Referensi & Perbandingan (== vs .equals())",
+        "definition": "Tipe primitif menyimpan nilai langsung di stack memori. Tipe referensi menyimpan alamat referensi objek di heap memori.",
+        "content": "Tipe data primitif terdiri dari 8 jenis: byte, short, int, long, float, double, char, boolean. Operator == pada tipe referensi membandingkan kesamaan alamat memori (apakah menunjuk ke objek yang sama), sedangkan method .equals() membandingkan kesamaan isi konten.",
+        "syntax": "String s1 = new String(\"PBO\");\nString s2 = new String(\"PBO\");\n\nSystem.out.println(s1 == s2);      // false (alamat berbeda)\nSystem.out.println(s1.equals(s2)); // true (konten sama)",
+        "explanation": "String bersifat immutable (nilainya tidak dapat diubah setelah dibuat). Setiap operasi modifikasi menghasilkan objek String baru.",
+        "examSummary": "Gunakan == untuk nilai primitif, gunakan .equals() untuk membandingkan isi objek seperti String.",
+        "commonMistakes": "Membandingkan String menggunakan == pada ujian atau aplikasi.",
+        "sourceLocation": "PBO_3 hal. 3-5; PBO-4 hal. 16-35"
+      },
+      {
+        "id": "sub-2-4",
+        "title": "Operator, Pre/Post Increment & Type Casting",
+        "definition": "Operator melakukan operasi terhadap operand. Type casting mengonversi tipe data antar-tipe kompatibel.",
+        "content": "Perbedaan pre-increment (++x) dan post-increment (x++): ++x menambah nilai dahulu baru menghasilkan nilai baru; x++ mengevaluasi nilai lama dahulu baru menambah nilai variabel. Widening casting otomatis (int ke double), sedangkan narrowing casting membutuhkan tanda kurung eksplisit ((int) doubleVal).",
+        "syntax": "int w = 5, x = 5;\nint y = 8 - x++; // y = 8 - 5 = 3; setelah ini x menjadi 6\nint z = 8 - (++w); // w menjadi 6; z = 8 - 6 = 2;\n\ndouble pi = 3.14159;\nint bulat = (int) pi; // bulat bernilai 3",
+        "explanation": "Post-increment sering menjadi jebakan soal ujian kuliah karena nilai yang digunakan dalam ekspresi adalah nilai lama.",
+        "examSummary": "Post-increment memakai nilai saat itu baru ditambah; pre-increment ditambah dulu baru dipakai.",
+        "commonMistakes": "Salah menghitung ekspresi bertingkat yang memuat post-increment.",
+        "sourceLocation": "PBO_3 hal. 33; PBO-4 hal. 40-75"
+      }
+    ]
+  },
+  {
+    "id": "bab-3",
+    "title": "Bab 3: Array dan ArrayList",
+    "shortDescription": "Konsep larik objek di Java, default values, iterasi for & for-each, array multidimensi, java.util.Arrays, dan dinamika ArrayList.",
+    "sourceFiles": [
+      "PBO-5 Array, dan Arraylist_copy.pdf",
+      "Eng_PBO_4_ArrayAndArrayList_copy.pdf"
+    ],
+    "subtopics": [
+      {
+        "id": "sub-3-1",
+        "title": "Deklarasi, Alokasi Memori, & Default Value Array",
+        "definition": "Array di Java diperlakukan sebagai objek yang menyimpan sejumlah elemen dengan tipe seragam dalam ukuran tetap.",
+        "content": "Deklarasi array menggunakan tanda kurung siku tipe[]. Instansiasi menggunakan kata kunci new tipe[panjang]. Saat array dialokasikan, setiap elemen otomatis diisi nilai default: 0 untuk numerik, 0.0 untuk desimal, false untuk boolean, dan null untuk tipe referensi/objek.",
+        "syntax": "int[] nilai = new int[5];       // semua elemen bernilai 0\nString[] nama = new String[3];   // semua elemen bernilai null\nboolean[] cek = new boolean[2];  // semua elemen bernilai false\n\n// Inisialisasi langsung\ndouble[] data = {10.5, 20.0, 35.75};",
+        "explanation": "Properti .length (tanpa tanda kurung) digunakan untuk mengetahui kapasitas panjang array.",
+        "examSummary": "Array berukuran tetap (fixed-size). Elemen otomatis diberi nilai default saat new dipanggil.",
+        "commonMistakes": "Menulis array.length() dengan kurung (itu method String, bukan atribut array).",
+        "sourceLocation": "PBO-5 hal. 2-7; Eng_PBO_4 hal. 2-7"
+      },
+      {
+        "id": "sub-3-2",
+        "title": "Akses Elemen, Iterasi for-each & Batas Indeks",
+        "definition": "Indeks array dimulai dari 0 sampai length - 1. Akses di luar batas memicu ArrayIndexOutOfBoundsException.",
+        "content": "Iterasi dapat dilakukan dengan for konvensional atau enhanced for loop (for-each). For-each loop memiliki sintaks ringkas: for (Tipe elemen : koleksi).",
+        "syntax": "String[] kota = {\"Jakarta\", \"Surabaya\", \"Mataram\"};\n\n// Enhanced for-each loop\nfor (String k : kota) {\n    System.out.println(k);\n}",
+        "explanation": "Enhanced for-each loop membaca setiap elemen dari awal hingga akhir secara aman tanpa variabel indeks i.",
+        "examSummary": "Indeks 0 hingga length - 1. For-each mempermudah traversal elemen array.",
+        "commonMistakes": "Mengakses indeks sama dengan panjang array (arr[arr.length]) yang menimbulkan ArrayIndexOutOfBoundsException.",
+        "sourceLocation": "PBO-5 hal. 8-11; Eng_PBO_4 hal. 8-10"
+      },
+      {
+        "id": "sub-3-3",
+        "title": "ArrayList: Koleksi Dinamis & Method Pokok",
+        "definition": "ArrayList adalah kelas dari java.util yang menyediakan struktur data array dinamis yang kapasitasnya membesar atau mengecil secara otomatis.",
+        "content": "ArrayList hanya dapat menampung objek (menggunakan Wrapper class untuk tipe primitif, seperti Integer untuk int). ArrayList memiliki method .add(), .get(index), .set(index, element), .remove(index), dan .size().",
+        "syntax": "import java.util.ArrayList;\n\nArrayList<String> daftar = new ArrayList<>();\ndaftar.add(\"Java\");      // Menambahkan elemen\ndaftar.add(\"Kotlin\");\n\nSystem.out.println(daftar.get(0)); // Output: Java\ndaftar.set(1, \"Python\");          // Mengubah elemen indeks 1\ndaftar.remove(0);                 // Menghapus elemen indeks 0\nSystem.out.println(daftar.size()); // Mengetahui jumlah elemen",
+        "explanation": "Gunakan .size() untuk ArrayList, bukan .length. Ambil elemen dengan .get(i), bukan arr[i].",
+        "examSummary": "ArrayList dinamis; method utama: add(), get(), set(), remove(), size().",
+        "commonMistakes": "Mencoba membuat ArrayList<int> dengan tipe primitif (seharusnya ArrayList<Integer>).",
+        "sourceLocation": "PBO-5 hal. 17-34; Eng_PBO_4 hal. 15-32"
+      }
+    ]
+  },
+  {
+    "id": "bab-4",
+    "title": "Bab 4: Abstraksi dan Enkapsulasi (Pilar 1 & 2)",
+    "shortDescription": "Menyembunyikan detail kompleksitas, perancangan entitas, access modifier, serta proteksi data via Getter dan Setter.",
+    "sourceFiles": [
+      "PBO 5 dan 6 - Abstraksi, Enkapsulasi, Pewarisan, Polymorphism (2025)_copy.pdf",
+      "Eng_PBO_5_6_Abstraction_Encapsulation_Inheritance_Polymorphism_copy.pdf"
+    ],
+    "subtopics": [
+      {
+        "id": "sub-4-1",
+        "title": "Abstraksi Desain & Implementasi (abstract & interface)",
+        "definition": "Abstraksi adalah proses menyaring dan menyajikan fitur esensial suatu objek sambil menyembunyikan detail implementasi yang tidak relevan.",
+        "content": "Pada tingkat desain, abstraksi mengidentifikasi entitas penting (contoh: Koperasi memilih Anggota dan Pinjaman, mengabaikan hobi anggota). Pada tingkat implementasi, abstraksi diwujudkan melalui abstract class dan method abstract atau interface yang didefinisikan sebagai kontrak untuk diimplementasikan subclass.",
+        "syntax": "public abstract class BangunDatar {\n    // Abstract method: tidak memiliki tubuh kode\n    public abstract double hitungLuas();\n}",
+        "explanation": "Kelas turunan wajib mengimplementasikan method hitungLuas() atau ikut dideklarasikan sebagai abstract.",
+        "examSummary": "Abstraksi memfokuskan \"apa yang dilakukan\" (what) daripada \"bagaimana caranya\" (how).",
+        "commonMistakes": "Mencoba membuat objek langsung dari abstract class (new BangunDatar() akan compile error).",
+        "sourceLocation": "PBO 5 dan 6 hal. 6-14; Eng_PBO_5_6 hal. 6-15"
+      },
+      {
+        "id": "sub-4-2",
+        "title": "Enkapsulasi & Access Modifiers (Information Hiding)",
+        "definition": "Enkapsulasi adalah teknik membungkus atribut dan method menjadi satu unit serta membatasi akses langsung dari luar demi menjaga integritas data.",
+        "content": "Terdapat 4 tingkatan hak akses (access modifier) di Java:\n1. private: hanya dapat diakses dalam class itu sendiri.\n2. default (tanpa modifier): hanya dapat diakses oleh class dalam package yang sama.\n3. protected: dapat diakses dalam package yang sama dan oleh subclass di package lain.\n4. public: dapat diakses dari mana saja.",
+        "syntax": "public class Akun {\n    private double saldo; // Terenkapsulasi (tidak bisa diakses langsung)\n\n    public double getSaldo() {\n        return saldo;\n    }\n}",
+        "explanation": "Dengan membuat atribut private, pihak luar tidak dapat mengubah saldo secara sembarangan.",
+        "examSummary": "Urutan hak akses dari tersempit ke terluas: private -> default -> protected -> public.",
+        "commonMistakes": "Membuat atribut bersifat public sehingga merusak prinsip Information Hiding.",
+        "sourceLocation": "PBO 5 dan 6 hal. 15-18; Eng_PBO_5_6 hal. 16-20"
+      },
+      {
+        "id": "sub-4-3",
+        "title": "Getter, Setter, Validasi, & Keyword this",
+        "definition": "Getter (Accessor) membaca nilai atribut private, Setter (Mutator) mengubah nilainya disertai validasi. Kata kunci this merujuk pada objek saat ini.",
+        "content": "Ketika nama parameter constructor atau setter sama dengan nama atribut class (parameter shadowing), gunakan this.atribut untuk membedakan atribut instance dari parameter lokal.",
+        "syntax": "public class SegiEmpat {\n    private double panjang;\n    private double lebar;\n\n    public SegiEmpat(double panjang, double lebar) {\n        this.panjang = panjang;\n        this.lebar = lebar;\n    }\n\n    public void setPanjang(double panjang) {\n        if (panjang > 0) {\n            this.panjang = panjang; // Validasi nilai positif\n        }\n    }\n\n    public double getPanjang() {\n        return this.panjang;\n    }\n}",
+        "explanation": "this.panjang mengacu pada instance variable, sedangkan panjang di sebelah kanan sama dengan mengacu pada parameter method.",
+        "examSummary": "Gunakan this untuk menyelesaikan ambigu bayangan nama parameter (variable shadowing).",
+        "commonMistakes": "Menulis \"panjang = panjang;\" di dalam constructor yang hanya menugaskan parameter ke dirinya sendiri tanpa mengubah atribut class.",
+        "sourceLocation": "PBO 5 dan 6 hal. 19-22; Eng_PBO_5_6 hal. 21-25"
+      }
+    ]
+  },
+  {
+    "id": "bab-5",
+    "title": "Bab 5: Pewarisan (Inheritance - Pilar 3)",
+    "shortDescription": "Hubungan is-a, keyword extends, aturan pewarisan modifier, keyword super, dan rantai eksekusi konstruktor.",
+    "sourceFiles": [
+      "PBO 5 dan 6 - Abstraksi, Enkapsulasi, Pewarisan, Polymorphism (2025)_copy.pdf",
+      "Eng_PBO_5_6_Abstraction_Encapsulation_Inheritance_Polymorphism_copy.pdf"
+    ],
+    "subtopics": [
+      {
+        "id": "sub-5-1",
+        "title": "Konsep Hubungan is-a & Keyword extends",
+        "definition": "Pewarisan memungkinkan subclass mewarisi state dan behavior dari superclass, mempromosikan reusabilitas kode.",
+        "content": "Deklarasi pewarisan di Java menggunakan kata kunci extends. Java menerapkan Single Inheritance untuk class (sebuah subclass hanya boleh meng-extend satu superclass secara langsung). Atribut dan method private superclass tidak diwariskan langsung ke subclass.",
+        "syntax": "public class Sepeda {\n    protected int kecepatan;\n    public void setKecepatan(int k) { this.kecepatan = k; }\n}\n\npublic class SepedaGunung extends Sepeda {\n    private int sadel;\n    public void setSadel(int s) { this.sadel = s; }\n}",
+        "explanation": "SepedaGunung mewarisi kecepatan dan method setKecepatan dari Sepeda, serta menambahkan fungsionalitas sadel.",
+        "examSummary": "Sintaks: class Anak extends Induk. Subclass mewarisi anggota non-private.",
+        "commonMistakes": "Mencoba multiple inheritance kelas dengan tanda koma (class C extends A, B) yang tidak diizinkan di Java.",
+        "sourceLocation": "PBO 5 dan 6 hal. 23-36; Eng_PBO_5_6 hal. 26-36"
+      },
+      {
+        "id": "sub-5-2",
+        "title": "Rantai Eksekusi Konstruktor & Keyword super",
+        "definition": "Konstruktor superclass TIDAK diwariskan ke subclass. Sebelum konstruktor subclass dijalankan, konstruktor superclass SELALU dipanggil terlebih dahulu.",
+        "content": "Jika superclass memiliki constructor tanpa argumen (no-arg), compiler secara otomatis menyisipkan super() di awal konstruktor subclass. Namun jika superclass HANYA memiliki konstruktor berparameter, maka subclass WAJIB memanggil super(...) secara eksplisit di baris pertama konstruktornya!",
+        "syntax": "public class Person {\n    private String name;\n    public Person(String name) {\n        this.name = name;\n    }\n}\n\npublic class Student extends Person {\n    private String nim;\n    public Student(String name, String nim) {\n        super(name); // Wajib baris pertama!\n        this.nim = nim;\n    }\n}",
+        "explanation": "super(name) menjalankan konstruktor Person untuk menginisialisasi atribut name sebelum inisialisasi nim dilakukan.",
+        "examSummary": "super(...) wajib berada di baris pertama dalam konstruktor subclass.",
+        "commonMistakes": "Menempatkan pemanggilan super(...) setelah baris kode lain di dalam konstruktor, yang memicu compile error.",
+        "sourceLocation": "PBO 5 dan 6 hal. 37-57; Eng_PBO_5_6 hal. 37-57"
+      },
+      {
+        "id": "sub-5-3",
+        "title": "Hak Akses protected dalam Pewarisan",
+        "definition": "Modifier protected memberikan hak akses kepada class dalam package yang sama DAN seluruh subclass turunan meskipun berada di package berbeda.",
+        "content": "Jika suatu atribut dideklarasikan private di parent class, subclass tidak dapat membacanya secara langsung (misal: p.nama menghasilkan error: nama has private access in Parent). Mengubahnya menjadi protected atau menyediakan getter/setter yang diwariskan menyelesaikan masalah tersebut.",
+        "syntax": "public class Pegawai {\n    protected String nama;\n    protected double gaji;\n}\n\npublic class Manajer extends Pegawai {\n    public void naikkanGaji(double persen) {\n        this.gaji += (this.gaji * persen / 100); // Valid karena gaji bertipe protected\n    }\n}",
+        "explanation": "Atribut protected memungkinkan subclass memanipulasi atribut penting parent tanpa membukanya ke publik luas.",
+        "examSummary": "protected = dapat diakses oleh subclass di package mana pun dan class satu package.",
+        "commonMistakes": "Mengira subclass dapat mengakses langsung field private milik superclass.",
+        "sourceLocation": "PBO 5 dan 6 hal. 58-66; Eng_PBO_5_6 hal. 58-66"
+      }
+    ]
+  },
+  {
+    "id": "bab-6",
+    "title": "Bab 6: Polimorfisme (Polymorphism - Pilar 4)",
+    "shortDescription": "Satu interface banyak bentuk: Method Overloading (compile-time) vs Overriding (runtime), anotasi @Override, dynamic dispatch, dan koleksi heterogen.",
+    "sourceFiles": [
+      "PBO 5 dan 6 - Abstraksi, Enkapsulasi, Pewarisan, Polymorphism (2025)_copy.pdf",
+      "Eng_PBO_5_6_Abstraction_Encapsulation_Inheritance_Polymorphism_copy.pdf"
+    ],
+    "subtopics": [
+      {
+        "id": "sub-6-1",
+        "title": "Method Overloading (Compile-Time Polymorphism)",
+        "definition": "Overloading adalah pembuatan beberapa method dalam class yang sama dengan NAMA YANG SAMA tetapi DAFTAR PARAMETER BERBEDA (jumlah atau tipe data).",
+        "content": "Keputusan method mana yang dieksekusi ditentukan saat kompilasi (static binding). Perbedaan tipe kembalian (return type) saja TIDAK mencukupi untuk overloading dan akan memicu duplicate method compile error.",
+        "syntax": "public class Lingkaran {\n    // Method 1: tanpa parameter\n    public void gambarLingkaran() {\n        System.out.println(\"Menggambar lingkaran default\");\n    }\n\n    // Method 2: overloaded dengan parameter int\n    public void gambarLingkaran(int diameter) {\n        System.out.println(\"Menggambar lingkaran diameter: \" + diameter);\n    }\n}",
+        "explanation": "Kompiler memilih method berdasarkan argumen yang dikirim saat pemanggilan.",
+        "examSummary": "Overloading: nama sama, parameter berbeda, dalam satu class, ditentukan saat compile-time.",
+        "commonMistakes": "Mencoba membuat dua method dengan nama dan parameter sama tetapi hanya mengubah tipe return-nya.",
+        "sourceLocation": "PBO 5 dan 6 hal. 67-75; Eng_PBO_5_6 hal. 67-75"
+      },
+      {
+        "id": "sub-6-2",
+        "title": "Method Overriding & Anotasi @Override (Runtime Polymorphism)",
+        "definition": "Overriding terjadi ketika subclass mendefinisikan ulang method yang diwariskan dari superclass dengan SIGNATURE (nama, parameter, dan return type) YANG PERSIS SAMA.",
+        "content": "Kaidah overriding:\n1. Nama method dan parameter harus identik.\n2. Access modifier di subclass tidak boleh lebih terbatas dibanding superclass (misal: jika method superclass bernilai public, subclass tidak boleh default atau private).\n3. Anotasi @Override digunakan untuk memverifikasi ke kompiler bahwa method benar-benar meng-override method parent.\n4. Gunakan super.namaMethod() jika ingin menyertakan logika dari parent.",
+        "syntax": "public class Sepeda {\n    public void setGir(int pertambahanGir) {\n        // Logika dasar\n    }\n}\n\npublic class SepedaGunung extends Sepeda {\n    @Override\n    public void setGir(int pertambahanGir) {\n        super.setGir(pertambahanGir); // Panggil implementasi parent\n        System.out.println(\"Gir khusus sepeda gunung diterapkan\");\n    }\n}",
+        "explanation": "Saat runtime, Java akan mengeksekusi versi method milik objek nyata yang dibuat (Dynamic Method Dispatch).",
+        "examSummary": "Overriding: nama & parameter sama persis, antar-kelas turunan (inheritance), runtime dispatch.",
+        "commonMistakes": "Mempersempit hak akses saat overriding (misal parent method public diubah menjadi protected di subclass).",
+        "sourceLocation": "PBO 5 dan 6 hal. 76-80; Eng_PBO_5_6 hal. 76-80"
+      },
+      {
+        "id": "sub-6-3",
+        "title": "Polimorfisme Koleksi Heterogen & Poligon Hierarchy",
+        "definition": "Variabel referensi bertipe superclass dapat menunjuk ke objek konkret dari subclass mana pun, memungkinkan pemrosesan seragam terhadap ragam objek yang berbeda.",
+        "content": "Contoh klasik dari slide kuliah dosen: Poligon sebagai superclass dengan subclass SegiEmpat dan SegiTiga. Sebuah array Poligon[] dapat menyimpan baik SegiEmpat maupun SegiTiga, dan pemanggilan method display() akan secara otomatis menjalankan display() milik kelas masing-masing.",
+        "syntax": "Poligon[] daftarBentuk = new Poligon[2];\ndaftarBentuk[0] = new SegiEmpat();\ndaftarBentuk[1] = new SegiTiga();\n\nfor (Poligon p : daftarBentuk) {\n    System.out.println(p.display()); // Dynamic dispatch mengeksekusi versi sesuai tipe objek\n}",
+        "explanation": "Polimorfisme ini membuat kode menjadi sangat fleksibel dan mudah diperluas tanpa mengubah kode loop pemanggil.",
+        "examSummary": "Superclass reference dapat memegang subclass instance: Parent p = new Child();",
+        "commonMistakes": "Mengira p.display() akan mengeksekusi method Parent padahal objek nyatanya adalah Child.",
+        "sourceLocation": "PBO 5 dan 6 hal. 81-87; Eng_PBO_5_6 hal. 81-89"
+      }
+    ]
+  }
+];
+
+export const INITIAL_QUESTIONS = [
+  {
+    "id": "Q-01",
+    "topic": "Bab 1: Pengantar PBO & Bahasa Java",
+    "subtopic": "Anatomi Class, Object & Method Utama",
+    "difficulty": "Mudah",
+    "questionType": "fill-in-the-blanks",
+    "learningObjective": "Memahami deklarasi method utama (main method) dan instansiasi objek menggunakan kata kunci new.",
+    "title": "Deklarasi Main Method dan Instansiasi Objek Mobil",
+    "codeTemplate": "public class MobilBeraksi {\n    public static /* BLANK_1 */ main(String[] args) {\n        // Buat objek baru dari class Mobil\n        Mobil mobilAntik = /* BLANK_2 */ Mobil();\n        mobilAntik.warna = \"Hitam\";\n        System.out.println(\"Warna mobil: \" + mobilAntik.warna);\n    }\n}",
+    "blankDefinitions": [
+      {
+        "id": "BLANK_1",
+        "label": "Blank 1 (Return type method main)",
+        "placeholder": "tipe return",
+        "expectedAnswer": "void",
+        "acceptedAnswers": [
+          "void"
+        ],
+        "explanation": "Method main pada Java tidak mengembalikan nilai apa pun, sehingga menggunakan keyword void.",
+        "points": 5
+      },
+      {
+        "id": "BLANK_2",
+        "label": "Blank 2 (Keyword pembuatan objek)",
+        "placeholder": "keyword instansiasi",
+        "expectedAnswer": "new",
+        "acceptedAnswers": [
+          "new"
+        ],
+        "explanation": "Keyword new digunakan untuk mengalokasikan memori baru di heap dan memanggil konstruktor class.",
+        "points": 5
+      }
+    ],
+    "explanation": "Setiap program aplikasi Java mandiri harus memiliki method public static void main(String[] args) sebagai entry point eksekusi. Objek nyata diciptakan dengan kata kunci new diikuti pemanggilan konstruktor.",
+    "commonMistakes": "Lupa menulis void atau salah menulis huruf besar (Void). Mengira instansiasi objek tidak memerlukan keyword new.",
+    "sourceFile": "Materi PBO-1 dan 2 Pengantar Pemrograman Berorientasi Objek, PBO Pada Java_copy (1).pdf",
+    "sourceLocation": "Slide Halaman 23-28 (Mobil dan MobilBeraksi)",
+    "points": 10
+  },
+  {
+    "id": "Q-02",
+    "topic": "Bab 1: Pengantar PBO & Bahasa Java",
+    "subtopic": "Arsitektur Kompilasi Java",
+    "difficulty": "Mudah",
+    "learningObjective": "Mengetahui perintah kompilator Java dan eksekusi pada terminal.",
+    "title": "Kompilasi dan Eksekusi Program Java",
+    "codeTemplate": "// Perintah di terminal untuk mengkompilasi file Mobil.java:\n$ /* BLANK_1 */ Mobil.java\n\n// Perintah di terminal untuk mengeksekusi bytecode Mobil di JVM:\n$ /* BLANK_2 */ Mobil",
+    "blankDefinitions": [
+      {
+        "id": "BLANK_1",
+        "label": "Blank 1 (Perintah compiler Java)",
+        "placeholder": "perintah kompilasi",
+        "expectedAnswer": "javac",
+        "acceptedAnswers": [
+          "javac"
+        ],
+        "explanation": "javac (Java Compiler) digunakan untuk mengkompilasi berkas kode sumber .java menjadi berkas bytecode .class.",
+        "points": 5
+      },
+      {
+        "id": "BLANK_2",
+        "label": "Blank 2 (Perintah Java Virtual Machine)",
+        "placeholder": "perintah eksekusi",
+        "expectedAnswer": "java",
+        "acceptedAnswers": [
+          "java"
+        ],
+        "explanation": "java digunakan untuk menjalankan bytecode di dalam Java Virtual Machine (JVM) tanpa menuliskan ekstensi .class.",
+        "points": 5
+      }
+    ],
+    "explanation": "Alur kerja Java: programmer menulis source code (.java) -> javac mengkompilasi menjadi bytecode (.class) -> JVM menjalankan bytecode via perintah java.",
+    "commonMistakes": "Menambahkan ekstensi .class saat memanggil perintah java (misal: java Mobil.class yang merupakan kesalahan umum).",
+    "sourceFile": "Materi PBO-1 dan 2 Pengantar Pemrograman Berorientasi Objek, PBO Pada Java_copy (1).pdf",
+    "sourceLocation": "Slide Halaman 5 (javac dan java)",
+    "points": 10
+  },
+  {
+    "id": "Q-03",
+    "topic": "Bab 1: Pengantar PBO & Bahasa Java",
+    "subtopic": "State & Behavior Objek",
+    "difficulty": "Sedang",
+    "learningObjective": "Melengkapi atribut dan method pada class representasi objek dunia nyata.",
+    "title": "Class Sepeda dengan Atribut dan Method Pemutakhir Kecepatan",
+    "codeTemplate": "public class Sepeda {\n    // Atribut (state) kecepatan\n    int kecepatan = 0;\n    int gir = 1;\n\n    // Method (behavior) untuk menambah kecepatan\n    public void tambahKecepatan(int pertambahan) {\n        /* BLANK_1 */ = kecepatan + pertambahan;\n    }\n\n    public void tampilkanStatus() {\n        System.out.println(\"Kecepatan: \" + /* BLANK_2 */);\n    }\n}",
+    "blankDefinitions": [
+      {
+        "id": "BLANK_1",
+        "label": "Blank 1 (Variabel yang diperbarui)",
+        "placeholder": "nama variabel / this.variabel",
+        "expectedAnswer": "kecepatan",
+        "acceptedAnswers": [
+          "kecepatan",
+          "this.kecepatan"
+        ],
+        "explanation": "Nilai kecepatan bertambah dengan menjumlahkan kecepatan lama dan parameter pertambahan.",
+        "points": 5
+      },
+      {
+        "id": "BLANK_2",
+        "label": "Blank 2 (Variabel yang dicetak)",
+        "placeholder": "variabel status",
+        "expectedAnswer": "kecepatan",
+        "acceptedAnswers": [
+          "kecepatan",
+          "this.kecepatan"
+        ],
+        "explanation": "Method tampilkanStatus mencetak state dari variabel kecepatan.",
+        "points": 5
+      }
+    ],
+    "explanation": "Atribut kelas menyimpan state objek, dan method mengubah atau membaca state tersebut.",
+    "commonMistakes": "Salah membedakan parameter pertambahan dengan atribut kecepatan.",
+    "sourceFile": "Materi PBO-1 dan 2 Pengantar Pemrograman Berorientasi Objek, PBO Pada Java_copy (1).pdf",
+    "sourceLocation": "Slide Halaman 17-21 (variable kecepatan dan Sepeda)",
+    "points": 10
+  },
+  {
+    "id": "Q-04",
+    "topic": "Bab 2: Statements, Expressions, Variabel, Tipe Data & Operator",
+    "subtopic": "Perbandingan Nilai: == vs .equals()",
+    "difficulty": "Sedang",
+    "learningObjective": "Memahami perbedaan perbandingan identitas alamat memori vs kesamaan konten teks pada String.",
+    "title": "Perbandingan Konten String pada Java",
+    "codeTemplate": "public class StringTest {\n    public static void main(String[] args) {\n        String nama1 = new String(\"Royana\");\n        String nama2 = new String(\"Royana\");\n\n        // Membandingkan kesamaan isi teks karakter\n        boolean kontenSama = nama1./* BLANK_1 */(nama2);\n\n        // Membandingkan alamat referensi memori (identity)\n        boolean referensiSama = (nama1 /* BLANK_2 */ nama2);\n\n        System.out.println(kontenSama);    // Output: true\n        System.out.println(referensiSama); // Output: false\n    }\n}",
+    "blankDefinitions": [
+      {
+        "id": "BLANK_1",
+        "label": "Blank 1 (Method pembanding isi string)",
+        "placeholder": "nama method",
+        "expectedAnswer": "equals",
+        "acceptedAnswers": [
+          "equals"
+        ],
+        "explanation": "Method .equals() pada String digunakan untuk memeriksa apakah kedua objek memiliki urutan karakter yang persis sama.",
+        "points": 5
+      },
+      {
+        "id": "BLANK_2",
+        "label": "Blank 2 (Operator pembanding identitas alamat)",
+        "placeholder": "operator perbandingan",
+        "expectedAnswer": "==",
+        "acceptedAnswers": [
+          "=="
+        ],
+        "explanation": "Operator == membandingkan apakah variabel referensi menunjuk ke blok memori heap yang persis sama.",
+        "points": 5
+      }
+    ],
+    "explanation": "Pada tipe referensi (seperti objek dan String yang dibuat dengan new), operator == hanya membandingkan alamat objek, bukan isinya. Untuk memeriksa kesamaan konten harus menggunakan method .equals().",
+    "commonMistakes": "Menggunakan == untuk membandingkan string yang nilainya sama namun instansiasi berbeda.",
+    "sourceFile": "PBO_3_StatementsExpressionsVariablesDataTypesOperators_copy (1).pdf",
+    "sourceLocation": "Slide Halaman 4 (Comparing Values: == vs .equals())",
+    "points": 10
+  },
+  {
+    "id": "Q-05",
+    "topic": "Bab 2: Statements, Expressions, Variabel, Tipe Data & Operator",
+    "subtopic": "Operator Increment Pre vs Post & Type Casting",
+    "difficulty": "Sedang",
+    "learningObjective": "Menganalisis hasil operasi post-increment dan konversi tipe data eksplisit (narrowing casting).",
+    "title": "Evaluasi Post-Increment dan Type Casting Luas Lingkaran",
+    "codeTemplate": "public class OperatorCastingTest {\n    public static void main(String[] args) {\n        int x = 5;\n        // Post-increment: nilai x dievaluasi dahulu sebelum dinaikkan nilainya\n        int y = 8 - x/* BLANK_1 */; // y bernilai 3, setelah ini x bernilai 6\n\n        double luasDecimal = 11.78 * 3.141592;\n        // Konversi tipe (type-casting) dari double menjadi integer (pemotongan desimal)\n        int luasBulat = (/* BLANK_2 */) luasDecimal;\n\n        System.out.println(\"y: \" + y + \", luasBulat: \" + luasBulat);\n    }\n}",
+    "blankDefinitions": [
+      {
+        "id": "BLANK_1",
+        "label": "Blank 1 (Operator post-increment)",
+        "placeholder": "operator",
+        "expectedAnswer": "++",
+        "acceptedAnswers": [
+          "++"
+        ],
+        "explanation": "Post-increment (++) menggunakan nilai lama x (yaitu 5) pada ekspresi (8 - 5 = 3), lalu menaikkan nilai x menjadi 6.",
+        "points": 5
+      },
+      {
+        "id": "BLANK_2",
+        "label": "Blank 2 (Tipe target casting)",
+        "placeholder": "tipe data primitif",
+        "expectedAnswer": "int",
+        "acceptedAnswers": [
+          "int"
+        ],
+        "explanation": "(int) adalah sintaks explicit casting ke tipe bilangan bulat integer.",
+        "points": 5
+      }
+    ],
+    "explanation": "Soal latihan kuliah UNRAM: int y = 8 - x++; menghasilkan y = 3 dan x = 6. Explicit casting desimal ke int menggunakan format (int) ekspresi.",
+    "commonMistakes": "Menjawab pre-increment (++x) yang akan menghasilkan y = 2. Salah menuliskan tipe data integer menjadi Integer padahal tipe primitif adalah int.",
+    "sourceFile": "PBO_3_StatementsExpressionsVariablesDataTypesOperators_copy (1).pdf",
+    "sourceLocation": "Slide Halaman 33 (Home Practice: y = 8 - x++ dan type-casting int)",
+    "points": 10
+  },
+  {
+    "id": "Q-06",
+    "topic": "Bab 2: Statements, Expressions, Variabel, Tipe Data & Operator",
+    "subtopic": "Class Variable vs Instance Variable (Modifier static)",
+    "difficulty": "Sedang",
+    "learningObjective": "Membedakan variabel milik class bersama dengan variabel milik instance individual.",
+    "title": "Deklarasi Variabel Bersama dengan Modifier static",
+    "codeTemplate": "public class Mahasiswa {\n    private String nama;\n    // Variabel penghitung total seluruh objek mahasiswa di memori\n    public /* BLANK_1 */ int totalMahasiswa = 0;\n\n    public Mahasiswa(String nama) {\n        this.nama = nama;\n        // Akses langsung melalui nama class\n        Mahasiswa./* BLANK_2 */++;\n    }\n}",
+    "blankDefinitions": [
+      {
+        "id": "BLANK_1",
+        "label": "Blank 1 (Modifier class variable)",
+        "placeholder": "keyword modifier",
+        "expectedAnswer": "static",
+        "acceptedAnswers": [
+          "static"
+        ],
+        "explanation": "Modifier static membuat variabel menjadi milik class secara global, bukan milik objek individual.",
+        "points": 5
+      },
+      {
+        "id": "BLANK_2",
+        "label": "Blank 2 (Nama variabel class yang diakses)",
+        "placeholder": "nama variabel",
+        "expectedAnswer": "totalMahasiswa",
+        "acceptedAnswers": [
+          "totalMahasiswa"
+        ],
+        "explanation": "totalMahasiswa diakses melalui identifier class Mahasiswa.totalMahasiswa.",
+        "points": 5
+      }
+    ],
+    "explanation": "Variabel dengan modifier static hanya dialokasikan satu kali di memori dan dibagi bersama oleh semua instance dari class tersebut.",
+    "commonMistakes": "Menggunakan keyword final sehingga nilainya tidak dapat dinaikkan (increment).",
+    "sourceFile": "PBO_3_StatementsExpressionsVariablesDataTypesOperators_copy (1).pdf",
+    "sourceLocation": "Slide Halaman 13-14 (static vs non-static)",
+    "points": 10
+  },
+  {
+    "id": "Q-07",
+    "topic": "Bab 2: Statements, Expressions, Variabel, Tipe Data & Operator",
+    "subtopic": "Input Data Konsol Menggunakan Scanner",
+    "difficulty": "Mudah",
+    "learningObjective": "Mengimpor dan menginisialisasi kelas Scanner untuk membaca input dari System.in.",
+    "title": "Membaca Input Konsol dengan java.util.Scanner",
+    "codeTemplate": "import java.util./* BLANK_1 */;\n\npublic class BacaInput {\n    public static void main(String[] args) {\n        // Inisialisasi pembaca aliran input standar\n        Scanner input = new Scanner(System./* BLANK_2 */);\n        System.out.print(\"Masukkan nama: \");\n        String nama = input.nextLine();\n        System.out.println(\"Halo, \" + nama);\n    }\n}",
+    "blankDefinitions": [
+      {
+        "id": "BLANK_1",
+        "label": "Blank 1 (Nama class Scanner)",
+        "placeholder": "nama class",
+        "expectedAnswer": "Scanner",
+        "acceptedAnswers": [
+          "Scanner"
+        ],
+        "explanation": "Kelas pembaca input ada di package java.util bernama Scanner.",
+        "points": 5
+      },
+      {
+        "id": "BLANK_2",
+        "label": "Blank 2 (Standard input stream)",
+        "placeholder": "input stream",
+        "expectedAnswer": "in",
+        "acceptedAnswers": [
+          "in"
+        ],
+        "explanation": "System.in merepresentasikan input stream dari keyboard/terminal console.",
+        "points": 5
+      }
+    ],
+    "explanation": "Scanner digunakan untuk membaca baris teks atau angka dari terminal dengan memanfaatkan System.in.",
+    "commonMistakes": "Menulis System.out sebagai argumen Scanner (seharusnya System.in).",
+    "sourceFile": "PBO_3_StatementsExpressionsVariablesDataTypesOperators_copy (1).pdf",
+    "sourceLocation": "Slide Halaman 5 (Reading Input with Scanner)",
+    "points": 10
+  },
+  {
+    "id": "Q-08",
+    "topic": "Bab 3: Array dan ArrayList",
+    "subtopic": "Deklarasi, Alokasi Memori & Default Values Array",
+    "difficulty": "Mudah",
+    "learningObjective": "Memahami sintaks instansiasi array dan nilai bawaan elemen numerik di Java.",
+    "title": "Alokasi Array dan Nilai Default Elemen di Java",
+    "codeTemplate": "public class ArrayDemo {\n    public static void main(String[] args) {\n        // Deklarasi dan alokasi array integer berukuran 10 elemen\n        double[] values = /* BLANK_1 */ double[10];\n\n        // Karena belum diberi nilai eksplisit, nilai elemen pertama adalah:\n        // double mendapatkan nilai default /* BLANK_2 */\n        System.out.println(\"Elemen ke-0: \" + values[0]);\n    }\n}",
+    "blankDefinitions": [
+      {
+        "id": "BLANK_1",
+        "label": "Blank 1 (Keyword alokasi memori array)",
+        "placeholder": "keyword alokasi",
+        "expectedAnswer": "new",
+        "acceptedAnswers": [
+          "new"
+        ],
+        "explanation": "Array di Java adalah objek, sehingga alokasi memori menggunakan keyword new.",
+        "points": 5
+      },
+      {
+        "id": "BLANK_2",
+        "label": "Blank 2 (Nilai default tipe double)",
+        "placeholder": "nilai default desimal",
+        "expectedAnswer": "0.0",
+        "acceptedAnswers": [
+          "0.0",
+          "0.0d",
+          "0"
+        ],
+        "explanation": "Nilai default untuk elemen array bertipe desimal (double atau float) adalah 0.0.",
+        "points": 5
+      }
+    ],
+    "explanation": "Array di Java dialokasikan dengan keyword new tipe[kapasitas]. Java secara otomatis menginisialisasi setiap elemen dengan default value: 0 untuk integer, 0.0 untuk floating-point, false untuk boolean, dan null untuk object.",
+    "commonMistakes": "Mengira nilai awal elemen array acak (seperti pada bahasa C/C++). Di Java nilainya terjamin 0 atau 0.0.",
+    "sourceFile": "Eng_PBO_4_ArrayAndArrayList_copy.pdf",
+    "sourceLocation": "Slide Halaman 3-6 (Default Initialization Values: double[] value = new double[10])",
+    "points": 10
+  },
+  {
+    "id": "Q-09",
+    "topic": "Bab 3: Array dan ArrayList",
+    "subtopic": "Iterasi Array dengan Enhanced For-Each Loop & .length",
+    "difficulty": "Sedang",
+    "learningObjective": "Menggunakan atribut .length dan traversal array menggunakan perulangan for-each.",
+    "title": "Iterasi Array Kota Menggunakan Enhanced For Loop",
+    "codeTemplate": "public class ArrayKota {\n    public static void main(String[] args) {\n        String[] daftarKota = {\"Jakarta\", \"Surabaya\", \"Mataram\"};\n\n        // Properti untuk mengetahui jumlah elemen array\n        int jumlah = daftarKota./* BLANK_1 */;\n\n        // Perulangan modern tanpa index (enhanced for loop)\n        for (/* BLANK_2 */ namaKota : daftarKota) {\n            System.out.println(namaKota);\n        }\n    }\n}",
+    "blankDefinitions": [
+      {
+        "id": "BLANK_1",
+        "label": "Blank 1 (Properti ukuran array)",
+        "placeholder": "properti ukuran",
+        "expectedAnswer": "length",
+        "acceptedAnswers": [
+          "length"
+        ],
+        "explanation": "Array memiliki properti length (tanpa tanda kurung) untuk mengetahui banyaknya elemen.",
+        "points": 5
+      },
+      {
+        "id": "BLANK_2",
+        "label": "Blank 2 (Tipe variabel iterasi for-each)",
+        "placeholder": "tipe data elemen",
+        "expectedAnswer": "String",
+        "acceptedAnswers": [
+          "String"
+        ],
+        "explanation": "Elemen daftarKota adalah String, sehingga variabel penampung perulangan harus bertipe String.",
+        "points": 5
+      }
+    ],
+    "explanation": "Array menggunakan properti length (bukan method length() atau size()). Sintaks enhanced for-each loop adalah for(TipeVariabel nama : namaArray).",
+    "commonMistakes": "Menulis length() dengan tanda kurung (itu method pada class String, bukan properti array).",
+    "sourceFile": "PBO-5 Array, dan Arraylist_copy.pdf",
+    "sourceLocation": "Slide Halaman 9-11 (ArrayKota.java dan Mengetahui Jumlah Elemen Array)",
+    "points": 10
+  },
+  {
+    "id": "Q-10",
+    "topic": "Bab 3: Array dan ArrayList",
+    "subtopic": "Koleksi Dinamis ArrayList & Generics",
+    "difficulty": "Sedang",
+    "learningObjective": "Menggunakan method penambah dan pembaca pada kelas koleksi java.util.ArrayList.",
+    "title": "Operasi ArrayList dengan Generics",
+    "codeTemplate": "import java.util.ArrayList;\n\npublic class MahasiswaList {\n    public static void main(String[] args) {\n        // Deklarasi ArrayList dinamis bertipe String\n        ArrayList<String> list = new ArrayList</* BLANK_1 */>();\n\n        // Menambahkan elemen ke dalam daftar\n        list./* BLANK_2 */(\"Ahmad\");\n        list.add(\"Budi\");\n\n        // Mengambil elemen pertama (indeks 0)\n        String pertama = list.get(0);\n        System.out.println(\"Nama: \" + pertama + \", total: \" + list.size());\n    }\n}",
+    "blankDefinitions": [
+      {
+        "id": "BLANK_1",
+        "label": "Blank 1 (Operator diamond generics)",
+        "placeholder": "diamond / tipe generics",
+        "expectedAnswer": ">",
+        "acceptedAnswers": [
+          ">",
+          "String>"
+        ],
+        "explanation": "Pada Java modern digunakan diamond operator new ArrayList<>() atau new ArrayList<String>().",
+        "points": 5
+      },
+      {
+        "id": "BLANK_2",
+        "label": "Blank 2 (Method penambah item)",
+        "placeholder": "nama method",
+        "expectedAnswer": "add",
+        "acceptedAnswers": [
+          "add"
+        ],
+        "explanation": "Method .add() digunakan untuk memasukkan elemen baru ke ujung ArrayList.",
+        "points": 5
+      }
+    ],
+    "explanation": "ArrayList merupakan koleksi berukuran dinamis. Elemen ditambahkan dengan method add(), diambil dengan get(index), dan jumlahnya dihitung dengan size().",
+    "commonMistakes": "Menggunakan method append() (seperti di Python) padahal di Java method resminya adalah add().",
+    "sourceFile": "Eng_PBO_4_ArrayAndArrayList_copy.pdf",
+    "sourceLocation": "Slide Halaman 15-20 (ArrayList Declaration & Methods)",
+    "points": 10
+  },
+  {
+    "id": "Q-11",
+    "topic": "Bab 4: Abstraksi dan Enkapsulasi",
+    "subtopic": "Enkapsulasi & Proteksi Variabel (Access Modifier private)",
+    "difficulty": "Mudah",
+    "learningObjective": "Menerapkan access modifier private pada atribut dan public pada method accessor.",
+    "title": "Enkapsulasi Atribut Class SegiEmpat",
+    "codeTemplate": "public class SegiEmpat {\n    // Sembunyikan atribut dari modifikasi langsung di luar kelas\n    /* BLANK_1 */ double panjang;\n    /* BLANK_1 */ double lebar;\n\n    // Sediakan method getter publik untuk membaca nilai panjang\n    /* BLANK_2 */ double getPanjang() {\n        return this.panjang;\n    }\n}",
+    "blankDefinitions": [
+      {
+        "id": "BLANK_1",
+        "label": "Blank 1 (Access modifier pelindung data)",
+        "placeholder": "access modifier data",
+        "expectedAnswer": "private",
+        "acceptedAnswers": [
+          "private"
+        ],
+        "explanation": "Atribut dienkapsulasi dengan kata kunci private agar tidak dapat diakses atau diubah langsung oleh kode luar.",
+        "points": 5
+      },
+      {
+        "id": "BLANK_2",
+        "label": "Blank 2 (Access modifier method pengambil)",
+        "placeholder": "access modifier getter",
+        "expectedAnswer": "public",
+        "acceptedAnswers": [
+          "public"
+        ],
+        "explanation": "Method getter harus bertipe public agar dapat dipanggil dari kelas lain.",
+        "points": 5
+      }
+    ],
+    "explanation": "Prinsip Enkapsulasi (Information Hiding) mengharuskan atribut internal disembunyikan menggunakan private, dan interaksi luar dilakukan lewat public getter/setter.",
+    "commonMistakes": "Membiarkan atribut bertipe public sehingga sembarang kode dapat merusak data tanpa validasi.",
+    "sourceFile": "PBO 5 dan 6 - Abstraksi, Enkapsulasi, Pewarisan, Polymorphism (2025)_copy.pdf",
+    "sourceLocation": "Slide Halaman 15-20 (Kode Kelas SegiEmpat)",
+    "points": 10
+  },
+  {
+    "id": "Q-12",
+    "topic": "Bab 4: Abstraksi dan Enkapsulasi",
+    "subtopic": "Konstruktor, Keyword this & Shadowing Parameter",
+    "difficulty": "Sedang",
+    "learningObjective": "Menghindari variabel shadowing pada konstruktor menggunakan kata kunci this.",
+    "title": "Konstruktor Berparameter dengan Keyword this pada Class House",
+    "codeTemplate": "public class House {\n    private int type;       // tipe rumah: 36, 45, 90\n    private double price;\n\n    // Konstruktor untuk inisialisasi awal objek\n    public House(int type, double price) {\n        // Gunakan keyword this untuk membedakan atribut dari parameter lokal\n        /* BLANK_1 */.type = type;\n        /* BLANK_1 */.price = price;\n    }\n\n    public double getPrice() {\n        /* BLANK_2 */ this.price;\n    }\n}",
+    "blankDefinitions": [
+      {
+        "id": "BLANK_1",
+        "label": "Blank 1 (Referensi ke objek saat ini)",
+        "placeholder": "keyword referensi objek",
+        "expectedAnswer": "this",
+        "acceptedAnswers": [
+          "this"
+        ],
+        "explanation": "Keyword this merujuk pada objek saat ini untuk membedakan instance variable dari parameter constructor.",
+        "points": 5
+      },
+      {
+        "id": "BLANK_2",
+        "label": "Blank 2 (Keyword pengembali nilai pada getter)",
+        "placeholder": "keyword return",
+        "expectedAnswer": "return",
+        "acceptedAnswers": [
+          "return"
+        ],
+        "explanation": "Keyword return digunakan untuk mengirim kembali nilai ke pemanggil method getPrice().",
+        "points": 5
+      }
+    ],
+    "explanation": "Ketika nama parameter lokal identik dengan nama instance variable (parameter shadowing), kata kunci this wajib digunakan untuk menugaskan nilai ke atribut milik instance.",
+    "commonMistakes": "Menulis type = type; yang mengakibatkan atribut class tidak pernah terisi nilai dari parameter (tetap bernilai 0).",
+    "sourceFile": "PBO_3_StatementsExpressionsVariablesDataTypesOperators_copy (1).pdf",
+    "sourceLocation": "Slide Halaman 31 (Exercise A: Worked Answer - House)",
+    "points": 10
+  },
+  {
+    "id": "Q-13",
+    "topic": "Bab 4: Abstraksi dan Enkapsulasi",
+    "subtopic": "Abstraksi Implementasi: Abstract Class & Abstract Method",
+    "difficulty": "Sulit",
+    "learningObjective": "Mendeklarasikan kelas abstrak dan method tanpa implementasi yang wajib dioverride subclass.",
+    "title": "Mendefinisikan Abstract Class dan Method Kontrak",
+    "codeTemplate": "// Kelas induk abstrak yang tidak dapat diinstansiasi langsung\npublic /* BLANK_1 */ class Bentuk {\n    protected String warna;\n\n    // Method abstrak tanpa tubuh kurung kurawal {}\n    public /* BLANK_1 */ double hitungLuas();\n}",
+    "blankDefinitions": [
+      {
+        "id": "BLANK_1",
+        "label": "Blank 1 (Keyword deklarasi kelas & method abstrak)",
+        "placeholder": "keyword abstrak",
+        "expectedAnswer": "abstract",
+        "acceptedAnswers": [
+          "abstract"
+        ],
+        "explanation": "Keyword abstract digunakan untuk mendeklarasikan kelas abstrak dan method abstrak tanpa blok implementasi.",
+        "points": 10
+      }
+    ],
+    "explanation": "Abstract class berfungsi sebagai cetak biru konseptual. Method abstrak dideklarasikan tanpa tubuh kode dan diakhiri titik koma (;), mewajibkan subclass mengimplementasikannya.",
+    "commonMistakes": "Menambahkan kurung kurawal {} pada deklarasi abstract method.",
+    "sourceFile": "PBO 5 dan 6 - Abstraksi, Enkapsulasi, Pewarisan, Polymorphism (2025)_copy.pdf",
+    "sourceLocation": "Slide Halaman 12-14 (Abstraction Implementation Level)",
+    "points": 10
+  },
+  {
+    "id": "Q-14",
+    "topic": "Bab 5: Pewarisan (Inheritance)",
+    "subtopic": "Hubungan is-a & Keyword extends",
+    "difficulty": "Mudah",
+    "learningObjective": "Menghubungkan subclass dengan superclass menggunakan kata kunci extends.",
+    "title": "Pewarisan SepedaGunung dari Superclass Sepeda",
+    "codeTemplate": "public class Sepeda {\n    protected int gir;\n    protected int kecepatan;\n}\n\n// SepedaGunung mewarisi semua sifat Sepeda\npublic class SepedaGunung /* BLANK_1 */ Sepeda {\n    private int sadel;\n\n    public void setSadel(int jumlah) {\n        /* BLANK_2 */.sadel = jumlah;\n    }\n}",
+    "blankDefinitions": [
+      {
+        "id": "BLANK_1",
+        "label": "Blank 1 (Keyword pewarisan)",
+        "placeholder": "keyword warisan",
+        "expectedAnswer": "extends",
+        "acceptedAnswers": [
+          "extends"
+        ],
+        "explanation": "Di Java, proses pewarisan suatu class dari class induk menggunakan keyword extends.",
+        "points": 5
+      },
+      {
+        "id": "BLANK_2",
+        "label": "Blank 2 (Keyword penunjuk objek saat ini)",
+        "placeholder": "keyword objek",
+        "expectedAnswer": "this",
+        "acceptedAnswers": [
+          "this"
+        ],
+        "explanation": "this.sadel merujuk pada instance variable sadel di dalam SepedaGunung.",
+        "points": 5
+      }
+    ],
+    "explanation": "Pewarisan di Java menggunakan kata kunci extends (misal: public class SepedaGunung extends Sepeda).",
+    "commonMistakes": "Menulis implements (yang digunakan untuk interface) atau inherits (yang bukan keyword Java).",
+    "sourceFile": "PBO 5 dan 6 - Abstraksi, Enkapsulasi, Pewarisan, Polymorphism (2025)_copy.pdf",
+    "sourceLocation": "Slide Halaman 28 & 33 (SepedaGunung extends Sepeda)",
+    "points": 10
+  },
+  {
+    "id": "Q-15",
+    "topic": "Bab 5: Pewarisan (Inheritance)",
+    "subtopic": "Rantai Konstruktor & Keyword super()",
+    "difficulty": "Sedang",
+    "learningObjective": "Memanggil konstruktor superclass dari konstruktor subclass pada baris pertama.",
+    "title": "Constructor Chaining Menggunakan super(...) pada Student extends Person",
+    "codeTemplate": "public class Person {\n    private String name;\n    public Person(String name) {\n        this.name = name;\n    }\n}\n\npublic class Student extends Person {\n    private String nim;\n\n    public Student(String name, String nim) {\n        // Panggil konstruktor berparameter milik parent class di baris pertama\n        /* BLANK_1 */(name);\n        this.nim = nim;\n    }\n}",
+    "blankDefinitions": [
+      {
+        "id": "BLANK_1",
+        "label": "Blank 1 (Pemanggilan konstruktor superclass)",
+        "placeholder": "keyword superclass constructor",
+        "expectedAnswer": "super",
+        "acceptedAnswers": [
+          "super"
+        ],
+        "explanation": "super(...) digunakan untuk memanggil konstruktor milik superclass. Harus diletakkan di baris pertama konstruktor subclass.",
+        "points": 10
+      }
+    ],
+    "explanation": "Konstruktor superclass tidak diwariskan ke subclass. Karena superclass Person hanya memiliki konstruktor berparameter (tanpa no-arg default constructor), subclass Student WAJIB memanggil super(name) secara eksplisit di baris paling awal.",
+    "commonMistakes": "Memanggil super(name) setelah inisialisasi this.nim (akan menyebabkan compile error: call to super must be first statement in constructor).",
+    "sourceFile": "PBO 5 dan 6 - Abstraksi, Enkapsulasi, Pewarisan, Polymorphism (2025)_copy.pdf",
+    "sourceLocation": "Slide Halaman 47-54 (Constructor pada inheritance & Student extends Person)",
+    "points": 10
+  },
+  {
+    "id": "Q-16",
+    "topic": "Bab 5: Pewarisan (Inheritance)",
+    "subtopic": "Hak Akses protected dan Pewarisan Turunan",
+    "difficulty": "Sedang",
+    "learningObjective": "Memahami bahwa atribut private tidak dapat diakses langsung oleh subclass sedangkan protected dapat.",
+    "title": "Akses Atribut Pegawai pada Subclass Manajer",
+    "codeTemplate": "public class Pegawai {\n    // Modifier agar dapat diakses langsung oleh turunan di mana pun\n    /* BLANK_1 */ double gaji;\n}\n\npublic class Manajer extends Pegawai {\n    public void beriBonus(double bonus) {\n        // Mengakses atribut warisan secara langsung\n        this./* BLANK_2 */ += bonus;\n    }\n}",
+    "blankDefinitions": [
+      {
+        "id": "BLANK_1",
+        "label": "Blank 1 (Access modifier ramah warisan)",
+        "placeholder": "access modifier",
+        "expectedAnswer": "protected",
+        "acceptedAnswers": [
+          "protected"
+        ],
+        "explanation": "Modifier protected memungkinkan anggota diakses oleh subclass di luar package.",
+        "points": 5
+      },
+      {
+        "id": "BLANK_2",
+        "label": "Blank 2 (Nama atribut warisan)",
+        "placeholder": "nama atribut",
+        "expectedAnswer": "gaji",
+        "acceptedAnswers": [
+          "gaji"
+        ],
+        "explanation": "Atribut gaji yang diwarisi dari Pegawai dapat diakses oleh Manajer.",
+        "points": 5
+      }
+    ],
+    "explanation": "Jika gaji dideklarasikan sebagai private di Pegawai, subclass Manajer akan menghasilkan pesan kesalahan kompilasi: \"gaji has private access in Pegawai\". Oleh karena itu digunakan modifier protected.",
+    "commonMistakes": "Mengira subclass otomatis bisa mengakses atribut private superclass.",
+    "sourceFile": "PBO 5 dan 6 - Abstraksi, Enkapsulasi, Pewarisan, Polymorphism (2025)_copy.pdf",
+    "sourceLocation": "Slide Halaman 58-61 (Pegawai, Manajer & protected)",
+    "points": 10
+  },
+  {
+    "id": "Q-17",
+    "topic": "Bab 5: Pewarisan (Inheritance)",
+    "subtopic": "Studi Kasus MatematikaCanggih extends Matematika",
+    "difficulty": "Sedang",
+    "learningObjective": "Menambahkan method baru pada kelas turunan sesuai latihan slide kuliah UNRAM.",
+    "title": "Implementasi MatematikaCanggih dengan Operasi Modulus",
+    "codeTemplate": "public class Matematika {\n    public int pertambahan(int a, int b) { return a + b; }\n    public int pengurangan(int a, int b) { return a - b; }\n}\n\n// Buat class MatematikaCanggih yang merupakan inherit dari Matematika\npublic class MatematikaCanggih /* BLANK_1 */ Matematika {\n    // Tambahkan method modulus\n    public int modulus(int a, int b) {\n        return a /* BLANK_2 */ b;\n    }\n}",
+    "blankDefinitions": [
+      {
+        "id": "BLANK_1",
+        "label": "Blank 1 (Keyword relasi turunan)",
+        "placeholder": "keyword",
+        "expectedAnswer": "extends",
+        "acceptedAnswers": [
+          "extends"
+        ],
+        "explanation": "MatematikaCanggih mewarisi Matematika dengan kata kunci extends.",
+        "points": 5
+      },
+      {
+        "id": "BLANK_2",
+        "label": "Blank 2 (Operator modulus)",
+        "placeholder": "operator sisa bagi",
+        "expectedAnswer": "%",
+        "acceptedAnswers": [
+          "%"
+        ],
+        "explanation": "% adalah operator modulus (sisa hasil bagi) di Java.",
+        "points": 5
+      }
+    ],
+    "explanation": "Latihan resmi slide PBO UNRAM halaman 62 meminta mahasiswa membuat class MatematikaCanggih mewarisi Matematika dan menambahkan method modulus(int a, int b).",
+    "commonMistakes": "Salah menulis operator modulus menjadi mod atau /.",
+    "sourceFile": "PBO 5 dan 6 - Abstraksi, Enkapsulasi, Pewarisan, Polymorphism (2025)_copy.pdf",
+    "sourceLocation": "Slide Halaman 62 (Latihan: Inheritance Matematika)",
+    "points": 10
+  },
+  {
+    "id": "Q-18",
+    "topic": "Bab 6: Polimorfisme (Polymorphism)",
+    "subtopic": "Method Overloading (Compile-Time Polymorphism)",
+    "difficulty": "Mudah",
+    "learningObjective": "Membuat beberapa method dengan nama sama namun parameter berbeda dalam satu kelas.",
+    "title": "Overloading Method gambarLingkaran pada Class Lingkaran",
+    "codeTemplate": "public class Lingkaran {\n    // Method versi 1 tanpa parameter\n    public void gambarLingkaran() {\n        System.out.println(\"Lingkaran standar digambar\");\n    }\n\n    // Method versi 2 yang dioverload dengan parameter diameter\n    public void gambarLingkaran(/* BLANK_1 */ diameter) {\n        System.out.println(\"Lingkaran dengan diameter \" + diameter + \" digambar\");\n    }\n}",
+    "blankDefinitions": [
+      {
+        "id": "BLANK_1",
+        "label": "Blank 1 (Tipe data parameter overload)",
+        "placeholder": "tipe data",
+        "expectedAnswer": "int",
+        "acceptedAnswers": [
+          "int",
+          "double"
+        ],
+        "explanation": "Method overloading membutuhkan tipe data parameter yang valid pada deklarasi, misalnya int atau double.",
+        "points": 10
+      }
+    ],
+    "explanation": "Method Overloading adalah kemampuan mendefinisikan beberapa method bernama sama di dalam class yang sama, asalkan tipe atau jumlah parameternya berbeda.",
+    "commonMistakes": "Mengira overloading boleh memiliki parameter sama asalkan return type-nya berbeda (itu salah dan akan menghasilkan compile error duplicate method).",
+    "sourceFile": "PBO 5 dan 6 - Abstraksi, Enkapsulasi, Pewarisan, Polymorphism (2025)_copy.pdf",
+    "sourceLocation": "Slide Halaman 70 (Polymorphism – Overloading class Lingkaran)",
+    "points": 10
+  },
+  {
+    "id": "Q-19",
+    "topic": "Bab 6: Polimorfisme (Polymorphism)",
+    "subtopic": "Method Overriding & Anotasi @Override",
+    "difficulty": "Sedang",
+    "learningObjective": "Mendefinisikan ulang method warisan pada subclass dengan signature yang persis sama.",
+    "title": "Overriding Method setGir pada SepedaGunung",
+    "codeTemplate": "public class Sepeda {\n    public void setGir(int pertambahanGir) {\n        System.out.println(\"Gir bertambah: \" + pertambahanGir);\n    }\n}\n\npublic class SepedaGunung extends Sepeda {\n    // Anotasi penjamin bahwa method ini menimpa method superclass\n    /* BLANK_1 */\n    public void setGir(int pertambahanGir) {\n        // Panggil method versi superclass terlebih dahulu\n        /* BLANK_2 */.setGir(pertambahanGir);\n        System.out.println(\"Pengaturan khusus suspensi diterapkan\");\n    }\n}",
+    "blankDefinitions": [
+      {
+        "id": "BLANK_1",
+        "label": "Blank 1 (Anotasi override Java)",
+        "placeholder": "anotasi",
+        "expectedAnswer": "@Override",
+        "acceptedAnswers": [
+          "@Override"
+        ],
+        "explanation": "@Override memberitahu compiler bahwa method tersebut sengaja menimpa (override) method dari superclass.",
+        "points": 5
+      },
+      {
+        "id": "BLANK_2",
+        "label": "Blank 2 (Keyword pemanggil method superclass)",
+        "placeholder": "keyword superclass",
+        "expectedAnswer": "super",
+        "acceptedAnswers": [
+          "super"
+        ],
+        "explanation": "super.setGir(...) mengeksekusi implementasi yang ada di superclass Sepeda.",
+        "points": 5
+      }
+    ],
+    "explanation": "Method overriding terjadi pada hirarki pewarisan. Anotasi @Override memastikan signature method persis sama dengan parent.",
+    "commonMistakes": "Menggunakan this.setGir(...) di dalam tubuh method setGir itu sendiri yang akan memicu infinite recursion (StackOverflowError).",
+    "sourceFile": "PBO 5 dan 6 - Abstraksi, Enkapsulasi, Pewarisan, Polymorphism (2025)_copy.pdf",
+    "sourceLocation": "Slide Halaman 71-73 (Polymorphism - Overriding SepedaGunung)",
+    "points": 10
+  },
+  {
+    "id": "Q-20",
+    "topic": "Bab 6: Polimorfisme (Polymorphism)",
+    "subtopic": "Dynamic Method Dispatch & Hirarki Poligon",
+    "difficulty": "Sulit",
+    "learningObjective": "Memahami dynamic binding saat objek subclass disimpan dalam referensi superclass.",
+    "title": "Koleksi Polimorfik Heterogen pada Class TesPoligon",
+    "codeTemplate": "public class Poligon {\n    public String display() { return \"Bentuk Poligon\"; }\n}\n\npublic class SegiEmpat extends Poligon {\n    @Override\n    public String display() { return \"SegiEmpat\"; }\n}\n\npublic class TesPoligon {\n    public static void main(String[] args) {\n        // Superclass reference menampung instance dari subclass\n        /* BLANK_1 */ p = new SegiEmpat();\n\n        // Dynamic dispatch: method yang dieksekusi adalah milik objek nyata (SegiEmpat)\n        System.out.println(p./* BLANK_2 */()); // Mencetak: SegiEmpat\n    }\n}",
+    "blankDefinitions": [
+      {
+        "id": "BLANK_1",
+        "label": "Blank 1 (Tipe referensi superclass polimorfik)",
+        "placeholder": "tipe superclass",
+        "expectedAnswer": "Poligon",
+        "acceptedAnswers": [
+          "Poligon"
+        ],
+        "explanation": "Prinsip polimorfisme memungkinkan variabel referensi bertipe Poligon menunjuk ke objek subclass SegiEmpat.",
+        "points": 5
+      },
+      {
+        "id": "BLANK_2",
+        "label": "Blank 2 (Method yang dipanggil secara dinamis)",
+        "placeholder": "nama method",
+        "expectedAnswer": "display",
+        "acceptedAnswers": [
+          "display"
+        ],
+        "explanation": "display() dipanggil dan Java secara dinamis (runtime) mengeksekusi implementasi milik SegiEmpat.",
+        "points": 5
+      }
+    ],
+    "explanation": "Contoh resmi slide dosen hal. 83-85: Poligon p = new SegiEmpat(); Saat p.display() dipanggil, JVM menjalankan method display() yang telah di-override oleh kelas SegiEmpat (Dynamic Method Dispatch).",
+    "commonMistakes": "Mengira yang dieksekusi adalah display() milik Poligon karena tipe referensi variabelnya Poligon.",
+    "sourceFile": "PBO 5 dan 6 - Abstraksi, Enkapsulasi, Pewarisan, Polymorphism (2025)_copy.pdf",
+    "sourceLocation": "Slide Halaman 83-87 (Gambaran Polimorfisme & TesPoligon)",
+    "points": 10
+  },
+  {
+    "id": "Q-21",
+    "topic": "Bab 2: Statements, Expressions, Variabel, Tipe Data & Operator",
+    "subtopic": "Konstanta dan Keyword final",
+    "difficulty": "Mudah",
+    "learningObjective": "Mendeklarasikan konstanta yang nilainya tidak dapat diubah menggunakan keyword final.",
+    "title": "Deklarasi Konstanta Gaji Pokok (BASE_SALARY)",
+    "codeTemplate": "public class Employee {\n    // Deklarasi konstanta yang tidak dapat diubah nilainya\n    private static /* BLANK_1 */ double BASE_SALARY = 15000.00;\n    private String name;\n    private double salary;\n\n    public Employee(String name) {\n        this.name = name;\n        this.salary = /* BLANK_2 */;\n    }\n}",
+    "blankDefinitions": [
+      {
+        "id": "BLANK_1",
+        "label": "Blank 1 (Keyword pengunci konstanta)",
+        "placeholder": "keyword konstanta",
+        "expectedAnswer": "final",
+        "acceptedAnswers": [
+          "final"
+        ],
+        "explanation": "Keyword final membuat nilai variabel menjadi konstan dan tidak dapat diubah lagi setelah inisialisasi.",
+        "points": 5
+      },
+      {
+        "id": "BLANK_2",
+        "label": "Blank 2 (Nama konstanta rujukan)",
+        "placeholder": "nama konstanta",
+        "expectedAnswer": "BASE_SALARY",
+        "acceptedAnswers": [
+          "BASE_SALARY"
+        ],
+        "explanation": "BASE_SALARY digunakan sebagai nilai default gaji pegawai baru.",
+        "points": 5
+      }
+    ],
+    "explanation": "Konstanta di Java didefinisikan dengan kombinasi static final tipe NAMA_KONSTANTA. Nilai konstan ditulis dengan huruf kapital sesuai konvensi Java.",
+    "commonMistakes": "Menulis const (const adalah reserved word di C++ / JS, di Java keyword yang benar adalah final).",
+    "sourceFile": "PBO 5 dan 6 - Abstraksi, Enkapsulasi, Pewarisan, Polymorphism (2025)_copy.pdf",
+    "sourceLocation": "Slide Halaman 74 (Overloading Constructor Employee & BASE_SALARY)",
+    "points": 10
+  },
+  {
+    "id": "Q-22",
+    "topic": "Bab 5: Pewarisan (Inheritance)",
+    "subtopic": "Single Inheritance pada Java",
+    "difficulty": "Mudah",
+    "learningObjective": "Memahami bahwa Java tidak mendukung pewarisan berganda (multiple inheritance) untuk class.",
+    "title": "Aturan Pewarisan Tunggal (Single Inheritance) Java",
+    "codeTemplate": "// Di Java, sebuah class hanya boleh mewarisi satu superclass secara langsung\npublic class Balok extends /* BLANK_1 */ {\n    private double tinggi;\n\n    public Balok() {\n        // Memanggil konstruktor superclass tanpa argumen\n        /* BLANK_2 */();\n        this.tinggi = 0;\n    }\n}",
+    "blankDefinitions": [
+      {
+        "id": "BLANK_1",
+        "label": "Blank 1 (Nama superclass alas Balok)",
+        "placeholder": "nama superclass",
+        "expectedAnswer": "SegiEmpat",
+        "acceptedAnswers": [
+          "SegiEmpat"
+        ],
+        "explanation": "Pada slide dosen UNRAM, Balok mewarisi SegiEmpat yang memiliki panjang dan lebar.",
+        "points": 5
+      },
+      {
+        "id": "BLANK_2",
+        "label": "Blank 2 (Pemanggilan konstruktor induk)",
+        "placeholder": "keyword super",
+        "expectedAnswer": "super",
+        "acceptedAnswers": [
+          "super"
+        ],
+        "explanation": "super() memanggil konstruktor SegiEmpat() untuk menginisialisasi panjang dan lebar.",
+        "points": 5
+      }
+    ],
+    "explanation": "Contoh resmi slide PBO UNRAM halaman 38: public Balok() { super(); tinggi = 0; } di mana Balok mewarisi SegiEmpat.",
+    "commonMistakes": "Memanggil super() di luar konstruktor.",
+    "sourceFile": "PBO 5 dan 6 - Abstraksi, Enkapsulasi, Pewarisan, Polymorphism (2025)_copy.pdf",
+    "sourceLocation": "Slide Halaman 38 (Pewarisan dalam Java: Balok extends SegiEmpat)",
+    "points": 10
+  },
+  {
+    "id": "Q-23",
+    "topic": "Bab 3: Array dan ArrayList",
+    "subtopic": "Array 2 Dimensi (Matriks)",
+    "difficulty": "Sedang",
+    "learningObjective": "Mendeklarasikan dan mengakses elemen matriks 2 dimensi di Java.",
+    "title": "Deklarasi Array 2 Dimensi (Baris dan Kolom)",
+    "codeTemplate": "public class Matriks2D {\n    public static void main(String[] args) {\n        // Matriks dengan 3 baris dan 4 kolom\n        int/* BLANK_1 */ matriks = new int[3][4];\n\n        // Mengisi elemen baris ke-0 kolom ke-0\n        matriks[0][0] = 99;\n\n        // Mendapatkan jumlah baris\n        int jumlahBaris = matriks./* BLANK_2 */;\n        System.out.println(\"Jumlah baris: \" + jumlahBaris);\n    }\n}",
+    "blankDefinitions": [
+      {
+        "id": "BLANK_1",
+        "label": "Blank 1 (Simbol dimensi array 2D)",
+        "placeholder": "simbol kurung siku ganda",
+        "expectedAnswer": "[][]",
+        "acceptedAnswers": [
+          "[][]",
+          "[] []"
+        ],
+        "explanation": "Array dua dimensi ditandai dengan sepasang kurung siku ganda [][].",
+        "points": 5
+      },
+      {
+        "id": "BLANK_2",
+        "label": "Blank 2 (Properti panjang dimensi terluar)",
+        "placeholder": "properti ukuran",
+        "expectedAnswer": "length",
+        "acceptedAnswers": [
+          "length"
+        ],
+        "explanation": "matriks.length mengembalikan jumlah baris dalam matriks.",
+        "points": 5
+      }
+    ],
+    "explanation": "Array dua dimensi di Java pada dasarnya adalah array yang berisi objek array. Deklarasinya menggunakan int[][] nama atau int nama[][].",
+    "commonMistakes": "Menggunakan format baris koma kolom seperti int[3, 4] yang bukan sintaks Java.",
+    "sourceFile": "Eng_PBO_4_ArrayAndArrayList_copy.pdf",
+    "sourceLocation": "Slide Halaman 12-14 (Multidimensional Arrays)",
+    "points": 10
+  },
+  {
+    "id": "Q-24",
+    "topic": "Bab 4: Abstraksi dan Enkapsulasi",
+    "subtopic": "Pemisahan Kelas Model dan Kelas Eksekusi (Main)",
+    "difficulty": "Mudah",
+    "learningObjective": "Menggunakan kelas aksi (Beraksi) untuk menguji objek sesuai pola materi kuliah PBO.",
+    "title": "Pola Penamaan dan Pengujian Kelas Beraksi di PBO UNRAM",
+    "codeTemplate": "// Pola di slide dosen: SegiEmpat dan SegiEmpatBeraksi\npublic class SegiEmpatBeraksi {\n    public static void main(String[] args) {\n        SegiEmpat s = new SegiEmpat(10.0, 5.0);\n        // Memanggil method getter yang dienkapsulasi\n        System.out.println(\"Panjang: \" + s./* BLANK_1 */());\n        System.out.println(\"Lebar: \" + s./* BLANK_2 */());\n    }\n}",
+    "blankDefinitions": [
+      {
+        "id": "BLANK_1",
+        "label": "Blank 1 (Getter panjang)",
+        "placeholder": "getter",
+        "expectedAnswer": "getPanjang",
+        "acceptedAnswers": [
+          "getPanjang"
+        ],
+        "explanation": "getPanjang() mengembalikan nilai atribut panjang.",
+        "points": 5
+      },
+      {
+        "id": "BLANK_2",
+        "label": "Blank 2 (Getter lebar)",
+        "placeholder": "getter",
+        "expectedAnswer": "getLebar",
+        "acceptedAnswers": [
+          "getLebar"
+        ],
+        "explanation": "getLebar() mengembalikan nilai atribut lebar.",
+        "points": 5
+      }
+    ],
+    "explanation": "Sesuai dengan gaya perkuliahan di PBO UNRAM (contoh: BilanganBeraksi, SegiEmpatBeraksi, MatematikaCanggihBeraksi), kelas model terpisah dari kelas utama yang memiliki main() untuk pengujian.",
+    "commonMistakes": "Mencoba mengakses atribut privat s.panjang secara langsung.",
+    "sourceFile": "PBO 5 dan 6 - Abstraksi, Enkapsulasi, Pewarisan, Polymorphism (2025)_copy.pdf",
+    "sourceLocation": "Slide Halaman 20 (KELAS UTAMA (MAIN))",
+    "points": 10
+  },
+  {
+    "id": "Q-25",
+    "topic": "Bab 1: Pengantar PBO & Bahasa Java",
+    "subtopic": "Ekstensi Berkas Sumber dan Bytecode Java",
+    "difficulty": "Mudah",
+    "questionType": "fill-in-the-blanks",
+    "learningObjective": "Memahami ekstensi file kode sumber Java dan ekstensi file hasil kompilasi bytecode.",
+    "title": "Ekstensi File Source Code dan Bytecode Java",
+    "codeTemplate": "// Berkas kode sumber Java disimpan dengan ekstensi: Mahasiswa./* BLANK_1 */\n// Setelah dikompilasi oleh javac, dihasilkan berkas bytecode: Mahasiswa./* BLANK_2 */",
+    "blankDefinitions": [
+      {
+        "id": "BLANK_1",
+        "label": "Blank 1 (Ekstensi kode sumber Java)",
+        "placeholder": "ekstensi sumber",
+        "expectedAnswer": "java",
+        "acceptedAnswers": [
+          "java"
+        ],
+        "explanation": "Berkas kode sumber Java ditulis oleh programmer dengan ekstensi .java.",
+        "points": 5
+      },
+      {
+        "id": "BLANK_2",
+        "label": "Blank 2 (Ekstensi berkas bytecode Java)",
+        "placeholder": "ekstensi bytecode",
+        "expectedAnswer": "class",
+        "acceptedAnswers": [
+          "class"
+        ],
+        "explanation": "Kompilator javac menerjemahkan berkas .java menjadi berkas bytecode berformat .class yang dijalankan oleh JVM.",
+        "points": 5
+      }
+    ],
+    "explanation": "Siklus hidup kompilasi Java: Programmer membuat berkas .java -> javac menghasilkan berkas bytecode arsitektur-netral .class -> JVM mengeksekusi .class di platform target.",
+    "commonMistakes": "Menukar antara ekstensi .java dan .class atau mengira bytecode berekstensi .exe.",
+    "sourceFile": "Materi PBO-1 dan 2 Pengantar Pemrograman Berorientasi Objek, PBO Pada Java_copy (1).pdf",
+    "sourceLocation": "Slide Halaman 3-5 (Arsitektur Kompilasi Java)",
+    "points": 10
+  },
+  {
+    "id": "Q-26",
+    "topic": "Bab 1: Pengantar PBO & Bahasa Java",
+    "subtopic": "Pernyataan Package dan Konvensi Nama Class",
+    "difficulty": "Mudah",
+    "questionType": "fill-in-the-blanks",
+    "learningObjective": "Mendeklarasikan namespace package dan class pada Java.",
+    "title": "Deklarasi Package dan Keyword Class",
+    "codeTemplate": "/* BLANK_1 */ id.ac.unram.pbo;\n\npublic /* BLANK_2 */ DataMahasiswa {\n    // Definisi class\n}",
+    "blankDefinitions": [
+      {
+        "id": "BLANK_1",
+        "label": "Blank 1 (Keyword pengelompokan package)",
+        "placeholder": "keyword package",
+        "expectedAnswer": "package",
+        "acceptedAnswers": [
+          "package"
+        ],
+        "explanation": "Keyword package diletakkan di baris paling awal berkas Java untuk mendefinisikan namespace atau folder pengelompokan class.",
+        "points": 5
+      },
+      {
+        "id": "BLANK_2",
+        "label": "Blank 2 (Keyword deklarasi class)",
+        "placeholder": "keyword class",
+        "expectedAnswer": "class",
+        "acceptedAnswers": [
+          "class"
+        ],
+        "explanation": "Keyword class digunakan untuk mendefinisikan sebuah tipe bentukan / blueprint class di Java.",
+        "points": 5
+      }
+    ],
+    "explanation": "Dalam struktur kode Java standar, deklarasi package ditulis pertama kali untuk mengelompokkan class ke dalam direktori terstruktur, diikuti oleh deklarasi class.",
+    "commonMistakes": "Menulis package setelah import atau deklarasi class yang mengakibatkan compile error.",
+    "sourceFile": "Materi PBO-1 dan 2 Pengantar Pemrograman Berorientasi Objek, PBO Pada Java_copy (1).pdf",
+    "sourceLocation": "Slide Halaman 16-18 (Struktur File Java)",
+    "points": 10
+  },
+  {
+    "id": "Q-27",
+    "topic": "Bab 1: Pengantar PBO & Bahasa Java",
+    "subtopic": "Parameter Array String pada Main Method",
+    "difficulty": "Sedang",
+    "questionType": "fill-in-the-blanks",
+    "learningObjective": "Melengkapi signature lengkap method main yang menerima argumen command-line.",
+    "title": "Signature Lengkap Main Method dan Parameter Command Line",
+    "codeTemplate": "public class ProgramUtama {\n    public static void main(/* BLANK_1 */[] args) {\n        if (args./* BLANK_2 */ > 0) {\n            System.out.println(\"Argumen pertama: \" + args[0]);\n        }\n    }\n}",
+    "blankDefinitions": [
+      {
+        "id": "BLANK_1",
+        "label": "Blank 1 (Tipe data parameter args)",
+        "placeholder": "tipe data",
+        "expectedAnswer": "String",
+        "acceptedAnswers": [
+          "String"
+        ],
+        "explanation": "Argumen baris perintah di Java selalu diterima dalam bentuk array bertipe String (String[] args).",
+        "points": 5
+      },
+      {
+        "id": "BLANK_2",
+        "label": "Blank 2 (Properti panjang array)",
+        "placeholder": "properti ukuran",
+        "expectedAnswer": "length",
+        "acceptedAnswers": [
+          "length"
+        ],
+        "explanation": "Array Java memiliki properti bawaan .length untuk mengecek jumlah elemen dalam array.",
+        "points": 5
+      }
+    ],
+    "explanation": "Method main wajib memiliki signature persis `public static void main(String[] args)`. Properti .length pada array digunakan untuk mengecek apakah ada argumen yang dikirimkan saat eksekusi command line.",
+    "commonMistakes": "Menulis string dengan huruf kecil (string) atau memanggil length dengan kurung length() pada array.",
+    "sourceFile": "Eng_PBO2_OOP and Java Introduction_copy (3).pdf",
+    "sourceLocation": "Slide Halaman 14-16 (Main Method Anatomy)",
+    "points": 10
+  },
+  {
+    "id": "Q-28",
+    "topic": "Bab 1: Pengantar PBO & Bahasa Java",
+    "subtopic": "Akses Anggota Objek via Operator Titik",
+    "difficulty": "Mudah",
+    "questionType": "fill-in-the-blanks",
+    "learningObjective": "Membuat objek rekening dan memanggil method behavior-nya.",
+    "title": "Instansiasi Objek RekeningBank dan Pemanggilan Method Setor",
+    "codeTemplate": "public class BankBeraksi {\n    public static void main(String[] args) {\n        RekeningBank rekBudi = /* BLANK_1 */ RekeningBank();\n        rekBudi./* BLANK_2 */(500000);\n    }\n}",
+    "blankDefinitions": [
+      {
+        "id": "BLANK_1",
+        "label": "Blank 1 (Keyword alokasi memori objek)",
+        "placeholder": "keyword instansiasi",
+        "expectedAnswer": "new",
+        "acceptedAnswers": [
+          "new"
+        ],
+        "explanation": "Operator new mengalokasikan memori baru di heap untuk instansiasi objek RekeningBank.",
+        "points": 5
+      },
+      {
+        "id": "BLANK_2",
+        "label": "Blank 2 (Nama method transaksi)",
+        "placeholder": "nama method",
+        "expectedAnswer": "setor",
+        "acceptedAnswers": [
+          "setor",
+          "simpanUang",
+          "deposit"
+        ],
+        "explanation": "Method setor dipanggil melalui operator titik untuk mengubah saldo objek rekBudi.",
+        "points": 5
+      }
+    ],
+    "explanation": "Objek di Java diinstansiasi dengan `new ClassName()`, lalu behavior (method)-nya dipanggil menggunakan operator titik seperti `rekBudi.setor(500000)`.",
+    "commonMistakes": "Lupa menulis kata kunci new saat membuat variabel objek sehingga bernilai null.",
+    "sourceFile": "Eng_PBO2_OOP and Java Introduction_copy (3).pdf",
+    "sourceLocation": "Slide Halaman 20-25 (Bank Account Analogy)",
+    "points": 10
+  },
+  {
+    "id": "Q-29",
+    "topic": "Bab 1: Pengantar PBO & Bahasa Java",
+    "subtopic": "NullPointerException pada Variabel Referensi Tanpa Objek",
+    "difficulty": "Sedang",
+    "questionType": "fill-in-the-blanks",
+    "learningObjective": "Menganalisis inisialisasi default null pada variabel referensi dan instansiasi yang tepat.",
+    "title": "Mencegah NullPointerException pada Variabel Objek",
+    "codeTemplate": "public class TesMobil {\n    public static void main(String[] args) {\n        Mobil m = /* BLANK_1 */; // Awalnya variabel referensi belum menunjuk ke objek\n        // Agar m.jalan() tidak memicu NullPointerException:\n        m = /* BLANK_2 */ Mobil();\n        m.jalan();\n    }\n}",
+    "blankDefinitions": [
+      {
+        "id": "BLANK_1",
+        "label": "Blank 1 (Literal referensi kosong)",
+        "placeholder": "literal null",
+        "expectedAnswer": "null",
+        "acceptedAnswers": [
+          "null"
+        ],
+        "explanation": "Literal null menandakan bahwa variabel referensi objek belum menunjuk ke alamat memori objek mana pun.",
+        "points": 5
+      },
+      {
+        "id": "BLANK_2",
+        "label": "Blank 2 (Keyword instansiasi objek)",
+        "placeholder": "keyword instansiasi",
+        "expectedAnswer": "new",
+        "acceptedAnswers": [
+          "new"
+        ],
+        "explanation": "Keyword new membuat instance nyata dari Mobil sehingga method jalan() dapat dipanggil dengan aman.",
+        "points": 5
+      }
+    ],
+    "explanation": "Jika variabel referensi bernilai null dan kita mencoba mengakses atribut atau method-nya (dereferencing), Java Virtual Machine akan melempar NullPointerException.",
+    "commonMistakes": "Menganggap variabel objek otomatis terbuat tanpa menulis new Mobil().",
+    "sourceFile": "Materi PBO-1 dan 2 Pengantar Pemrograman Berorientasi Objek, PBO Pada Java_copy (1).pdf",
+    "sourceLocation": "Slide Halaman 28-30 (Memori dan Instansiasi)",
+    "points": 10
+  },
+  {
+    "id": "Q-30",
+    "topic": "Bab 1: Pengantar PBO & Bahasa Java",
+    "subtopic": "Kompilasi Banyak File dan Classpath",
+    "difficulty": "Sedang",
+    "questionType": "fill-in-the-blanks",
+    "learningObjective": "Mengetahui perintah kompilasi wildcard dan eksekusi class utama.",
+    "title": "Perintah Kompilasi Multiberkas Menggunakan javac",
+    "codeTemplate": "// Perintah kompilasi seluruh file sumber berekstensi .java dalam direktori saat ini:\n$ /* BLANK_1 */ *.java\n\n// Menjalankan class utama AplikasiUtama:\n$ /* BLANK_2 */ AplikasiUtama",
+    "blankDefinitions": [
+      {
+        "id": "BLANK_1",
+        "label": "Blank 1 (Perintah compiler)",
+        "placeholder": "perintah kompilasi",
+        "expectedAnswer": "javac",
+        "acceptedAnswers": [
+          "javac"
+        ],
+        "explanation": "javac *.java mengompilasi semua berkas kode sumber Java sekaligus di direktori kerja.",
+        "points": 5
+      },
+      {
+        "id": "BLANK_2",
+        "label": "Blank 2 (Perintah JVM launcher)",
+        "placeholder": "perintah eksekusi",
+        "expectedAnswer": "java",
+        "acceptedAnswers": [
+          "java"
+        ],
+        "explanation": "java menjalankan class utama tanpa menuliskan akhiran .class.",
+        "points": 5
+      }
+    ],
+    "explanation": "Perintah `javac *.java` menghasilkan file .class untuk semua class yang saling berhubungan, lalu perintah `java AplikasiUtama` meluncurkan JVM untuk mengeksekusi method main class tersebut.",
+    "commonMistakes": "Menambahkan ekstensi .class saat eksekusi dengan perintah java (misal java AplikasiUtama.class adalah salah).",
+    "sourceFile": "Materi PBO-1 dan 2 Pengantar Pemrograman Berorientasi Objek, PBO Pada Java_copy (1).pdf",
+    "sourceLocation": "Slide Halaman 4-6 (Kompilasi Program)",
+    "points": 10
+  },
+  {
+    "id": "Q-31",
+    "topic": "Bab 1: Pengantar PBO & Bahasa Java",
+    "subtopic": "Pemisahan Tanggung Jawab Class Model dan Class Beraksi",
+    "difficulty": "Mudah",
+    "questionType": "fill-in-the-blanks",
+    "learningObjective": "Memahami pola penamaan class beraksi yang diajarkan pada praktikum PBO UNRAM.",
+    "title": "Struktur Class Matematika dan MatematikaBeraksi",
+    "codeTemplate": "public class MatematikaBeraksi {\n    public /* BLANK_1 */ void main(String[] args) {\n        Matematika mtk = new Matematika();\n        int hasil = mtk./* BLANK_2 */(10, 20);\n        System.out.println(\"Hasil: \" + hasil);\n    }\n}",
+    "blankDefinitions": [
+      {
+        "id": "BLANK_1",
+        "label": "Blank 1 (Modifier method main)",
+        "placeholder": "modifier static",
+        "expectedAnswer": "static",
+        "acceptedAnswers": [
+          "static"
+        ],
+        "explanation": "Method main wajib bersifat static agar JVM dapat memanggilnya tanpa perlu menginstansiasi class MatematikaBeraksi terlebih dahulu.",
+        "points": 5
+      },
+      {
+        "id": "BLANK_2",
+        "label": "Blank 2 (Method operasi penjumlahan)",
+        "placeholder": "nama method",
+        "expectedAnswer": "pertambahan",
+        "acceptedAnswers": [
+          "pertambahan",
+          "tambah"
+        ],
+        "explanation": "Method pertambahan pada class Matematika menerima dua integer dan mengembalikan hasil jumlahnya.",
+        "points": 5
+      }
+    ],
+    "explanation": "Pola praktikum PBO UNRAM memisahkan class logika (misal Matematika) dari class driver pengujian (MatematikaBeraksi) yang berisi `public static void main`.",
+    "commonMistakes": "Lupa modifier static pada main method.",
+    "sourceFile": "Materi PBO-1 dan 2 Pengantar Pemrograman Berorientasi Objek, PBO Pada Java_copy (1).pdf",
+    "sourceLocation": "Slide Halaman 35-40 (Latihan Matematika & MatematikaBeraksi)",
+    "points": 10
+  },
+  {
+    "id": "Q-32",
+    "topic": "Bab 1: Pengantar PBO & Bahasa Java",
+    "subtopic": "Konsep Object Identity vs State",
+    "difficulty": "Sulit",
+    "questionType": "fill-in-the-blanks",
+    "learningObjective": "Membedakan dua objek independen dengan nilai atribut (state) yang sama di memori heap.",
+    "title": "Alokasi Dua Objek Terpisah di Memori Heap",
+    "codeTemplate": "public class UjiObjek {\n    public static void main(String[] args) {\n        Titik t1 = /* BLANK_1 */ Titik(5, 10);\n        Titik t2 = /* BLANK_1 */ Titik(5, 10);\n        // t1 dan t2 menempati alamat memori berbeda di heap:\n        boolean samaAlamat = (t1 /* BLANK_2 */ t2); // Bernilai false!\n        System.out.println(\"Alamat sama: \" + samaAlamat);\n    }\n}",
+    "blankDefinitions": [
+      {
+        "id": "BLANK_1",
+        "label": "Blank 1 (Keyword instansiasi)",
+        "placeholder": "keyword new",
+        "expectedAnswer": "new",
+        "acceptedAnswers": [
+          "new"
+        ],
+        "explanation": "Setiap pemanggilan new mengalokasikan blok memori independen baru di heap.",
+        "points": 5
+      },
+      {
+        "id": "BLANK_2",
+        "label": "Blank 2 (Operator kesamaan referensi)",
+        "placeholder": "operator relasional",
+        "expectedAnswer": "==",
+        "acceptedAnswers": [
+          "=="
+        ],
+        "explanation": "Operator == pada variabel objek membandingkan kesamaan alamat referensi memori, bukan kesamaan data internal.",
+        "points": 5
+      }
+    ],
+    "explanation": "Meskipun atribut t1 dan t2 sama-sama (5, 10), pemanggilan kata kunci new sebanyak dua kali menghasilkan dua instance berbeda di heap, sehingga t1 == t2 bernilai false.",
+    "commonMistakes": "Mengira t1 == t2 menghasilkan true karena nilai koordinatnya sama.",
+    "sourceFile": "Eng_PBO2_OOP and Java Introduction_copy (3).pdf",
+    "sourceLocation": "Slide Halaman 30-36 (Objects in Memory & Identity)",
+    "points": 10
+  },
+  {
+    "id": "Q-33",
+    "topic": "Bab 2: Statements, Expressions, Variabel, Tipe Data & Operator",
+    "subtopic": "Inisialisasi Scanner dan Input Integer",
+    "difficulty": "Mudah",
+    "questionType": "fill-in-the-blanks",
+    "learningObjective": "Membaca masukan bilangan bulat dari papan ketik menggunakan Scanner.",
+    "title": "Membaca Input Integer dari Console dengan Scanner",
+    "codeTemplate": "import java.util.Scanner;\n\npublic class InputData {\n    public static void main(String[] args) {\n        Scanner masukan = new Scanner(System./* BLANK_1 */);\n        System.out.print(\"Masukkan umur: \");\n        int umur = masukan./* BLANK_2 */();\n    }\n}",
+    "blankDefinitions": [
+      {
+        "id": "BLANK_1",
+        "label": "Blank 1 (Aliran standar input)",
+        "placeholder": "standard input",
+        "expectedAnswer": "in",
+        "acceptedAnswers": [
+          "in"
+        ],
+        "explanation": "System.in merepresentasikan aliran masukan standar (standard input stream) dari keyboard.",
+        "points": 5
+      },
+      {
+        "id": "BLANK_2",
+        "label": "Blank 2 (Method membaca integer)",
+        "placeholder": "method next int",
+        "expectedAnswer": "nextInt",
+        "acceptedAnswers": [
+          "nextInt"
+        ],
+        "explanation": "Method nextInt() dari class Scanner digunakan untuk memindai token berikutnya sebagai tipe data int.",
+        "points": 5
+      }
+    ],
+    "explanation": "Untuk membaca input keyboard di Java, kita menginstansiasi Scanner dengan argumen System.in, lalu memanggil method tipe spesifik seperti nextInt() untuk bilangan bulat.",
+    "commonMistakes": "Menulis System.IN atau nextInteger() yang bukan method valid pada Scanner.",
+    "sourceFile": "PBO_3_StatementsExpressionsVariablesDataTypesOperators_copy (1).pdf",
+    "sourceLocation": "Slide Halaman 20-22 (Input dengan Scanner)",
+    "points": 10
+  },
+  {
+    "id": "Q-34",
+    "topic": "Bab 2: Statements, Expressions, Variabel, Tipe Data & Operator",
+    "subtopic": "Perbedaan Pre-Increment dan Post-Increment",
+    "difficulty": "Sedang",
+    "questionType": "fill-in-the-blanks",
+    "learningObjective": "Menghitung hasil evaluasi ekspresi aritmatika dengan operator pre dan post increment.",
+    "title": "Evaluasi Ekspresi Aritmatika Pre dan Post Increment",
+    "codeTemplate": "public class OperasiIncrement {\n    public static void main(String[] args) {\n        int a = 5;\n        // x menggunakan nilai lama a (5), lalu a menjadi 6\n        int x = a/* BLANK_1 */;\n        // y menambah a dahulu (menjadi 7), lalu menghasilkan nilai baru 7\n        int y = /* BLANK_2 */a;\n        System.out.println(x + \",\" + y);\n    }\n}",
+    "blankDefinitions": [
+      {
+        "id": "BLANK_1",
+        "label": "Blank 1 (Operator post-increment)",
+        "placeholder": "operator post",
+        "expectedAnswer": "++",
+        "acceptedAnswers": [
+          "++"
+        ],
+        "explanation": "Operator post-increment ditulis setelah variabel (a++) sehingga nilainya dievaluasi sebelum penambahan.",
+        "points": 5
+      },
+      {
+        "id": "BLANK_2",
+        "label": "Blank 2 (Operator pre-increment)",
+        "placeholder": "operator pre",
+        "expectedAnswer": "++",
+        "acceptedAnswers": [
+          "++"
+        ],
+        "explanation": "Operator pre-increment ditulis sebelum variabel (++a) sehingga nilai variabel ditambah sebelum dievaluasi.",
+        "points": 5
+      }
+    ],
+    "explanation": "Pada `int x = a++`, nilai x mendapat 5 (nilai a saat itu), lalu nilai a berubah menjadi 6. Pada `int y = ++a`, nilai a ditambah menjadi 7 terlebih dahulu, lalu disalin ke y (y = 7).",
+    "commonMistakes": "Menganggap a++ langsung menghasilkan nilai bertambah pada ekspresi yang sama.",
+    "sourceFile": "PBO-4 JAVA Pernyataan, ekspresi, variabel, tipe data, dll_copy (1).pdf",
+    "sourceLocation": "Slide Halaman 45-50 (Pre/Post Increment)",
+    "points": 10
+  },
+  {
+    "id": "Q-35",
+    "topic": "Bab 2: Statements, Expressions, Variabel, Tipe Data & Operator",
+    "subtopic": "Narrowing Type Casting",
+    "difficulty": "Sedang",
+    "questionType": "fill-in-the-blanks",
+    "learningObjective": "Melakukan konversi tipe data eksplisit (narrowing casting) dari double ke int.",
+    "title": "Narrowing Casting Pecahan ke Bilangan Bulat",
+    "codeTemplate": "public class KonversiTipe {\n    public static void main(String[] args) {\n        double ipk = 3.85;\n        // Konversi eksplisit membuang bagian pecahan:\n        int ipkBulat = (/* BLANK_1 */) ipk;\n        System.out.println(\"IPK bulat: \" + ipkBulat); // Menghasilkan /* BLANK_2 */\n    }\n}",
+    "blankDefinitions": [
+      {
+        "id": "BLANK_1",
+        "label": "Blank 1 (Target tipe casting)",
+        "placeholder": "tipe target",
+        "expectedAnswer": "int",
+        "acceptedAnswers": [
+          "int"
+        ],
+        "explanation": "Operator casting (int) mengonversi nilai bertipe double menjadi int dengan membuang angka di belakang koma (truncation).",
+        "points": 5
+      },
+      {
+        "id": "BLANK_2",
+        "label": "Blank 2 (Nilai hasil pemotongan)",
+        "placeholder": "angka hasil",
+        "expectedAnswer": "3",
+        "acceptedAnswers": [
+          "3"
+        ],
+        "explanation": "Casting dari 3.85 ke int membuang .85 sehingga menghasilkan nilai 3 (tidak dibulatkan ke atas).",
+        "points": 5
+      }
+    ],
+    "explanation": "Java memerlukan tanda kurung tipe tujuan `(int) ekspresi` saat melakukan narrowing conversion (tipe presisi tinggi ke lebih rendah) karena berpotensi kehilangan informasi.",
+    "commonMistakes": "Mengira casting dari 3.85 ke int melakukan pembulatan matematika menjadi 4.",
+    "sourceFile": "PBO_3_StatementsExpressionsVariablesDataTypesOperators_copy (1).pdf",
+    "sourceLocation": "Slide Halaman 15-18 (Type Casting)",
+    "points": 10
+  },
+  {
+    "id": "Q-36",
+    "topic": "Bab 2: Statements, Expressions, Variabel, Tipe Data & Operator",
+    "subtopic": "Perbandingan Konten String via .equals()",
+    "difficulty": "Mudah",
+    "questionType": "fill-in-the-blanks",
+    "learningObjective": "Membandingkan kesamaan teks pada dua objek String.",
+    "title": "Perbandingan Kesamaan Isi Dua Objek String",
+    "codeTemplate": "public class BandingkanString {\n    public static void main(String[] args) {\n        String pass1 = new String(\"rahasia\");\n        String pass2 = new String(\"rahasia\");\n        // Membandingkan isi konten karakter, bukan alamat memori:\n        boolean cocok = pass1./* BLANK_1 */(pass2);\n        System.out.println(\"Password cocok: \" + cocok); // Menghasilkan /* BLANK_2 */\n    }\n}",
+    "blankDefinitions": [
+      {
+        "id": "BLANK_1",
+        "label": "Blank 1 (Method perbandingan String)",
+        "placeholder": "method equals",
+        "expectedAnswer": "equals",
+        "acceptedAnswers": [
+          "equals"
+        ],
+        "explanation": "Method equals() membandingkan karakter demi karakter isi dari kedua String.",
+        "points": 5
+      },
+      {
+        "id": "BLANK_2",
+        "label": "Blank 2 (Hasil boolean)",
+        "placeholder": "nilai boolean",
+        "expectedAnswer": "true",
+        "acceptedAnswers": [
+          "true"
+        ],
+        "explanation": "Karena kedua string memiliki urutan karakter yang persis sama, method mengembalikan true.",
+        "points": 5
+      }
+    ],
+    "explanation": "Operator `==` pada objek membandingkan referensi memori (apakah menunjuk ke objek yang sama di heap), sedangkan `.equals()` membandingkan nilai konten teks di dalamnya.",
+    "commonMistakes": "Menggunakan == untuk membandingkan String pada form login atau validasi teks.",
+    "sourceFile": "PBO_3_StatementsExpressionsVariablesDataTypesOperators_copy (1).pdf",
+    "sourceLocation": "Slide Halaman 3-5 (== vs equals)",
+    "points": 10
+  },
+  {
+    "id": "Q-37",
+    "topic": "Bab 2: Statements, Expressions, Variabel, Tipe Data & Operator",
+    "subtopic": "Modifier static pada Variabel Class Bersama",
+    "difficulty": "Sedang",
+    "questionType": "fill-in-the-blanks",
+    "learningObjective": "Membuat variabel pencatat jumlah objek yang dimiliki bersama oleh seluruh instance.",
+    "title": "Penerapan Variabel static untuk Menghitung Total Objek Tercipta",
+    "codeTemplate": "public class Mahasiswa {\n    // Variabel milik kelas bersama yang nilainya diakumulasi seluruh objek:\n    public /* BLANK_1 */ int jumlahMahasiswa = 0;\n    public String nama;\n\n    public Mahasiswa(String nama) {\n        this.nama = nama;\n        /* BLANK_2 */.jumlahMahasiswa++;\n    }\n}",
+    "blankDefinitions": [
+      {
+        "id": "BLANK_1",
+        "label": "Blank 1 (Modifier variabel kelas)",
+        "placeholder": "modifier static",
+        "expectedAnswer": "static",
+        "acceptedAnswers": [
+          "static"
+        ],
+        "explanation": "Modifier static menjadikan variabel terikat pada level class, bukan pada tiap instance objek.",
+        "points": 5
+      },
+      {
+        "id": "BLANK_2",
+        "label": "Blank 2 (Nama class pengakses static member)",
+        "placeholder": "nama class",
+        "expectedAnswer": "Mahasiswa",
+        "acceptedAnswers": [
+          "Mahasiswa"
+        ],
+        "explanation": "Variabel static direkomendasikan diakses melalui nama class-nya langsung (Mahasiswa.jumlahMahasiswa).",
+        "points": 5
+      }
+    ],
+    "explanation": "Variabel bertipe static disimpan di area memori class dan dibagi bersama oleh semua objek Mahasiswa, sangat cocok untuk counter atau konfigurasi global.",
+    "commonMistakes": "Mengira setiap objek memiliki salinan tersendiri dari variabel static.",
+    "sourceFile": "PBO-4 JAVA Pernyataan, ekspresi, variabel, tipe data, dll_copy (1).pdf",
+    "sourceLocation": "Slide Halaman 12-16 (Variabel Static / Class)",
+    "points": 10
+  },
+  {
+    "id": "Q-38",
+    "topic": "Bab 2: Statements, Expressions, Variabel, Tipe Data & Operator",
+    "subtopic": "Operator Modulo dan Kondisi Ganjil/Genap",
+    "difficulty": "Mudah",
+    "questionType": "fill-in-the-blanks",
+    "learningObjective": "Menggunakan operator sisa bagi (modulo) untuk menguji paritas bilangan.",
+    "title": "Pemeriksaan Bilangan Genap dengan Operator Modulo",
+    "codeTemplate": "public class CekGenap {\n    public static void main(String[] args) {\n        int bilangan = 14;\n        // Menguji apakah sisa bagi bilangan dengan 2 adalah 0:\n        if (bilangan /* BLANK_1 */ 2 == /* BLANK_2 */) {\n            System.out.println(\"Bilangan Genap\");\n        }\n    }\n}",
+    "blankDefinitions": [
+      {
+        "id": "BLANK_1",
+        "label": "Blank 1 (Operator sisa bagi)",
+        "placeholder": "operator modulo",
+        "expectedAnswer": "%",
+        "acceptedAnswers": [
+          "%"
+        ],
+        "explanation": "Operator % (modulo) menghitung sisa hasil pembagian integer.",
+        "points": 5
+      },
+      {
+        "id": "BLANK_2",
+        "label": "Blank 2 (Nilai pembanding sisa)",
+        "placeholder": "nilai nol",
+        "expectedAnswer": "0",
+        "acceptedAnswers": [
+          "0"
+        ],
+        "explanation": "Bilangan genap selalu memiliki sisa pembagian 0 ketika dibagi 2.",
+        "points": 5
+      }
+    ],
+    "explanation": "Operator modulo `%` adalah operator aritmatika dasar di Java yang sangat sering digunakan dalam soal logika penentuan bilangan genap/ganjil atau pembagian bersisa.",
+    "commonMistakes": "Menggunakan tanda / (pembagian) alih-alih % (modulo).",
+    "sourceFile": "PBO-4 JAVA Pernyataan, ekspresi, variabel, tipe data, dll_copy (1).pdf",
+    "sourceLocation": "Slide Halaman 38-42 (Operator Aritmatika)",
+    "points": 10
+  },
+  {
+    "id": "Q-39",
+    "topic": "Bab 2: Statements, Expressions, Variabel, Tipe Data & Operator",
+    "subtopic": "Literal Konstanta final",
+    "difficulty": "Mudah",
+    "questionType": "fill-in-the-blanks",
+    "learningObjective": "Mendeklarasikan konstanta yang nilainya tidak dapat diubah setelah inisialisasi.",
+    "title": "Deklarasi Konstanta Nilai Pi dengan Modifier final",
+    "codeTemplate": "public class Lingkaran {\n    // Konstanta matematika yang nilainya tidak boleh diubah:\n    public static /* BLANK_1 */ double PI = 3.14159;\n\n    public double hitungKeliling(double r) {\n        return 2 * /* BLANK_2 */ * r;\n    }\n}",
+    "blankDefinitions": [
+      {
+        "id": "BLANK_1",
+        "label": "Blank 1 (Modifier konstanta)",
+        "placeholder": "modifier final",
+        "expectedAnswer": "final",
+        "acceptedAnswers": [
+          "final"
+        ],
+        "explanation": "Keyword final mengunci nilai variabel sehingga menjadi konstanta (read-only).",
+        "points": 5
+      },
+      {
+        "id": "BLANK_2",
+        "label": "Blank 2 (Nama konstanta)",
+        "placeholder": "nama variabel PI",
+        "expectedAnswer": "PI",
+        "acceptedAnswers": [
+          "PI",
+          "Lingkaran.PI"
+        ],
+        "explanation": "Variabel PI diakses untuk perhitungan keliling lingkaran (2 * PI * r).",
+        "points": 5
+      }
+    ],
+    "explanation": "Kombinasi `public static final` adalah konvensi standar Java untuk mendeklarasikan konstanta global yang hemat memori dan aman dari modifikasi tidak sengaja.",
+    "commonMistakes": "Menggunakan const yang bukan kata kunci aktif untuk membuat konstanta di Java.",
+    "sourceFile": "PBO-4 JAVA Pernyataan, ekspresi, variabel, tipe data, dll_copy (1).pdf",
+    "sourceLocation": "Slide Halaman 25-28 (Kata Kunci final)",
+    "points": 10
+  },
+  {
+    "id": "Q-40",
+    "topic": "Bab 2: Statements, Expressions, Variabel, Tipe Data & Operator",
+    "subtopic": "Operator Logika Short-Circuit AND vs Bitwise AND",
+    "difficulty": "Sulit",
+    "questionType": "fill-in-the-blanks",
+    "learningObjective": "Memahami evaluasi short-circuit pada operator boolean && untuk mencegah runtime error.",
+    "title": "Short-Circuit Evaluation untuk Menghindari NullPointerException",
+    "codeTemplate": "public class PengamanNull {\n    public static void main(String[] args) {\n        String teks = null;\n        // Operator short-circuit tidak akan mengevaluasi bagian kanan jika bagian kiri false:\n        if (teks != null /* BLANK_1 */ teks./* BLANK_2 */() > 0) {\n            System.out.println(\"Teks valid\");\n        }\n    }\n}",
+    "blankDefinitions": [
+      {
+        "id": "BLANK_1",
+        "label": "Blank 1 (Operator short-circuit AND)",
+        "placeholder": "operator AND",
+        "expectedAnswer": "&&",
+        "acceptedAnswers": [
+          "&&"
+        ],
+        "explanation": "Operator && mengevaluasi ekspresi kedua hanya jika ekspresi pertama bernilai true (short-circuit).",
+        "points": 5
+      },
+      {
+        "id": "BLANK_2",
+        "label": "Blank 2 (Method panjang String)",
+        "placeholder": "method panjang",
+        "expectedAnswer": "length",
+        "acceptedAnswers": [
+          "length"
+        ],
+        "explanation": "Method length() pada objek String mengembalikan jumlah karakter.",
+        "points": 5
+      }
+    ],
+    "explanation": "Jika kita menggunakan single `&`, kedua sisi selalu dievaluasi sehingga `teks.length()` akan memicu NullPointerException saat teks adalah null. Operator double `&&` menghentikan evaluasi jika sisi kiri sudah bernilai false.",
+    "commonMistakes": "Menggunakan single & sehingga proteksi pemeriksaan null gagal bekerja.",
+    "sourceFile": "PBO-4 JAVA Pernyataan, ekspresi, variabel, tipe data, dll_copy (1).pdf",
+    "sourceLocation": "Slide Halaman 60-64 (Operator Logika Short-Circuit)",
+    "points": 10
+  },
+  {
+    "id": "Q-41",
+    "topic": "Bab 2: Statements, Expressions, Variabel, Tipe Data & Operator",
+    "subtopic": "Operasi Ternary (Kondisional Bertingkat)",
+    "difficulty": "Sedang",
+    "questionType": "fill-in-the-blanks",
+    "learningObjective": "Menggunakan operator ternary sebagai bentuk ringkas dari pernyataan if-else.",
+    "title": "Sintaks Operator Ternary untuk Penentuan Status Kelulusan",
+    "codeTemplate": "public class Kelulusan {\n    public static void main(String[] args) {\n        int nilai = 75;\n        // Format ternary: kondisi ? nilaiJikaTrue : nilaiJikaFalse\n        String status = (nilai >= 60) /* BLANK_1 */ \"Lulus\" /* BLANK_2 */ \"Mengulang\";\n        System.out.println(\"Status: \" + status);\n    }\n}",
+    "blankDefinitions": [
+      {
+        "id": "BLANK_1",
+        "label": "Blank 1 (Simbol pemisah kondisi dan cabang true)",
+        "placeholder": "tanda tanya",
+        "expectedAnswer": "?",
+        "acceptedAnswers": [
+          "?"
+        ],
+        "explanation": "Tanda tanya ? mengawali cabang ekspresi jika kondisi evaluasi bernilai true.",
+        "points": 5
+      },
+      {
+        "id": "BLANK_2",
+        "label": "Blank 2 (Simbol pemisah cabang true dan false)",
+        "placeholder": "titik dua",
+        "expectedAnswer": ":",
+        "acceptedAnswers": [
+          ":"
+        ],
+        "explanation": "Tanda titik dua : memisahkan ekspresi true dan ekspresi false pada operator ternary.",
+        "points": 5
+      }
+    ],
+    "explanation": "Operator ternary `kondisi ? expTrue : expFalse` adalah satu-satunya operator yang membutuhkan tiga operand dan sering muncul dalam soal kuis pemrograman PBO.",
+    "commonMistakes": "Menukar urutan tanda tanya ? dan titik dua :.",
+    "sourceFile": "PBO-4 JAVA Pernyataan, ekspresi, variabel, tipe data, dll_copy (1).pdf",
+    "sourceLocation": "Slide Halaman 70-74 (Operator Ternary)",
+    "points": 10
+  },
+  {
+    "id": "Q-42",
+    "topic": "Bab 3: Array dan ArrayList",
+    "subtopic": "Inisialisasi Array Langsung dengan Kurung Kurawal",
+    "difficulty": "Mudah",
+    "questionType": "fill-in-the-blanks",
+    "learningObjective": "Mendeklarasikan dan menginisialisasi array String secara langsung.",
+    "title": "Inisialisasi Array String Tanpa Keyword new Eksplisit",
+    "codeTemplate": "public class DaftarHari {\n    public static void main(String[] args) {\n        // Inisialisasi langsung array String dengan kurung kurawal:\n        String[] hari = /* BLANK_1 */ \"Senin\", \"Selasa\", \"Rabu\" /* BLANK_2 */;\n        System.out.println(\"Hari pertama: \" + hari[0]);\n    }\n}",
+    "blankDefinitions": [
+      {
+        "id": "BLANK_1",
+        "label": "Blank 1 (Kurung kurawal buka)",
+        "placeholder": "kurung buka",
+        "expectedAnswer": "{",
+        "acceptedAnswers": [
+          "{"
+        ],
+        "explanation": "Kurung kurawal buka { digunakan untuk mengawali daftar elemen literal array.",
+        "points": 5
+      },
+      {
+        "id": "BLANK_2",
+        "label": "Blank 2 (Kurung kurawal tutup)",
+        "placeholder": "kurung tutup",
+        "expectedAnswer": "}",
+        "acceptedAnswers": [
+          "}"
+        ],
+        "explanation": "Kurung kurawal tutup } menutup daftar inisialisasi elemen array.",
+        "points": 5
+      }
+    ],
+    "explanation": "Java memperbolehkan array initializer syntax singkat seperti `String[] arr = { \"A\", \"B\", \"C\" };` saat inisialisasi digabung bersamaan dengan deklarasi.",
+    "commonMistakes": "Menggunakan tanda kurung siku [ ] alih-alih kurung kurawal { } untuk inisialisasi literal.",
+    "sourceFile": "Eng_PBO_4_ArrayAndArrayList_copy.pdf",
+    "sourceLocation": "Slide Halaman 5-8 (Array Initialization)",
+    "points": 10
+  },
+  {
+    "id": "Q-43",
+    "topic": "Bab 3: Array dan ArrayList",
+    "subtopic": "Perulangan Enhanced For-Each pada Array",
+    "difficulty": "Mudah",
+    "questionType": "fill-in-the-blanks",
+    "learningObjective": "Mengiterasi seluruh elemen array menggunakan perulangan enhanced for-each.",
+    "title": "Iterasi Elemen Array Bilangan Bulat Menggunakan Enhanced For Loop",
+    "codeTemplate": "public class CetakNilai {\n    public static void main(String[] args) {\n        int[] skor = {80, 90, 75, 88};\n        // Enhanced for-each loop:\n        for (/* BLANK_1 */ s /* BLANK_2 */ skor) {\n            System.out.println(\"Skor: \" + s);\n        }\n    }\n}",
+    "blankDefinitions": [
+      {
+        "id": "BLANK_1",
+        "label": "Blank 1 (Tipe data elemen loop)",
+        "placeholder": "tipe data",
+        "expectedAnswer": "int",
+        "acceptedAnswers": [
+          "int"
+        ],
+        "explanation": "Tipe data variabel iterasi harus cocok dengan tipe elemen array (int).",
+        "points": 5
+      },
+      {
+        "id": "BLANK_2",
+        "label": "Blank 2 (Pemisah titik dua pada for-each)",
+        "placeholder": "simbol pemisah",
+        "expectedAnswer": ":",
+        "acceptedAnswers": [
+          ":"
+        ],
+        "explanation": "Tanda titik dua : adalah operator pemisah sintaks dalam enhanced for loop.",
+        "points": 5
+      }
+    ],
+    "explanation": "Sintaks `for (TipeElemen namaVar : sumberKoleksi)` diperkenalkan sejak Java 5 untuk mempermudah traversal array tanpa perlu mengelola variabel indeks manual.",
+    "commonMistakes": "Menggunakan keyword in seperti pada bahasa pemrograman lain.",
+    "sourceFile": "Eng_PBO_4_ArrayAndArrayList_copy.pdf",
+    "sourceLocation": "Slide Halaman 10-12 (Enhanced for loop)",
+    "points": 10
+  },
+  {
+    "id": "Q-44",
+    "topic": "Bab 3: Array dan ArrayList",
+    "subtopic": "Menghindari ArrayIndexOutOfBoundsException",
+    "difficulty": "Sedang",
+    "questionType": "fill-in-the-blanks",
+    "learningObjective": "Mengakses elemen terakhir array secara dinamis menggunakan properti .length.",
+    "title": "Pengambilan Elemen Terakhir Array dengan Indeks Dinamis",
+    "codeTemplate": "public class ElemenTerakhir {\n    public static void main(String[] args) {\n        String[] kota = {\"Mataram\", \"Praya\", \"Selong\"};\n        // Indeks elemen terakhir adalah panjang array dikurangi 1:\n        int indeksTerakhir = kota./* BLANK_1 */ - 1;\n        System.out.println(\"Kota terakhir: \" + kota[/* BLANK_2 */]);\n    }\n}",
+    "blankDefinitions": [
+      {
+        "id": "BLANK_1",
+        "label": "Blank 1 (Properti ukuran array)",
+        "placeholder": "properti length",
+        "expectedAnswer": "length",
+        "acceptedAnswers": [
+          "length"
+        ],
+        "explanation": "Properti length memberikan jumlah elemen dalam array kota.",
+        "points": 5
+      },
+      {
+        "id": "BLANK_2",
+        "label": "Blank 2 (Variabel indeks)",
+        "placeholder": "nama variabel",
+        "expectedAnswer": "indeksTerakhir",
+        "acceptedAnswers": [
+          "indeksTerakhir"
+        ],
+        "explanation": "Variabel indeksTerakhir bernilai kota.length - 1 yang merupakan indeks elemen sah paling belakang.",
+        "points": 5
+      }
+    ],
+    "explanation": "Array di Java berindeks nol (0-based indexing). Jika ukuran array adalah N, maka indeks terakhir yang valid adalah N - 1. Mengakses arr[N] akan memicu ArrayIndexOutOfBoundsException.",
+    "commonMistakes": "Menulis length() dengan tanda kurung atau mengakses kota[kota.length] yang berujung exception.",
+    "sourceFile": "Eng_PBO_4_ArrayAndArrayList_copy.pdf",
+    "sourceLocation": "Slide Halaman 8-9 (Index boundary)",
+    "points": 10
+  },
+  {
+    "id": "Q-45",
+    "topic": "Bab 3: Array dan ArrayList",
+    "subtopic": "ArrayList Deklarasi Generics dan Method .add()",
+    "difficulty": "Mudah",
+    "questionType": "fill-in-the-blanks",
+    "learningObjective": "Membuat objek ArrayList dengan tipe generic dan menambahkan data.",
+    "title": "Deklarasi ArrayList Generic String dan Penambahan Data",
+    "codeTemplate": "import java.util./* BLANK_1 */;\n\npublic class ContohList {\n    public static void main(String[] args) {\n        ArrayList<String> daftar = new ArrayList<>();\n        // Menambahkan elemen baru ke dalam list:\n        daftar./* BLANK_2 */(\"Pemrograman Berorientasi Objek\");\n    }\n}",
+    "blankDefinitions": [
+      {
+        "id": "BLANK_1",
+        "label": "Blank 1 (Nama class koleksi)",
+        "placeholder": "nama class",
+        "expectedAnswer": "ArrayList",
+        "acceptedAnswers": [
+          "ArrayList"
+        ],
+        "explanation": "Class ArrayList berada dalam package java.util.",
+        "points": 5
+      },
+      {
+        "id": "BLANK_2",
+        "label": "Blank 2 (Method penambahan item)",
+        "placeholder": "method add",
+        "expectedAnswer": "add",
+        "acceptedAnswers": [
+          "add"
+        ],
+        "explanation": "Method add() menyisipkan elemen baru ke posisi paling belakang dalam ArrayList.",
+        "points": 5
+      }
+    ],
+    "explanation": "ArrayList adalah class koleksi dinamis dari Java Standard Library yang mengimplementasikan antarmuka List dan mendukung tipe data generik `<T>`.",
+    "commonMistakes": "Mengira method penambahan di ArrayList adalah append() atau push().",
+    "sourceFile": "PBO-5 Array, dan Arraylist_copy.pdf",
+    "sourceLocation": "Slide Halaman 25-28 (Konsep ArrayList)",
+    "points": 10
+  },
+  {
+    "id": "Q-46",
+    "topic": "Bab 3: Array dan ArrayList",
+    "subtopic": "Method .size() dan .get() pada ArrayList",
+    "difficulty": "Sedang",
+    "questionType": "fill-in-the-blanks",
+    "learningObjective": "Membaca jumlah data dan mengakses elemen ArrayList menggunakan method bawaannya.",
+    "title": "Perulangan Tradisional pada ArrayList dengan .size() dan .get()",
+    "codeTemplate": "import java.util.ArrayList;\n\npublic class IterasiList {\n    public static void main(String[] args) {\n        ArrayList<String> bahasa = new ArrayList<>();\n        bahasa.add(\"Java\");\n        bahasa.add(\"Kotlin\");\n\n        for (int i = 0; i < bahasa./* BLANK_1 */(); i++) {\n            System.out.println(bahasa./* BLANK_2 */(i));\n        }\n    }\n}",
+    "blankDefinitions": [
+      {
+        "id": "BLANK_1",
+        "label": "Blank 1 (Method ukuran ArrayList)",
+        "placeholder": "method size",
+        "expectedAnswer": "size",
+        "acceptedAnswers": [
+          "size"
+        ],
+        "explanation": "Method size() mengembalikan jumlah elemen yang saat ini tersimpan dalam ArrayList.",
+        "points": 5
+      },
+      {
+        "id": "BLANK_2",
+        "label": "Blank 2 (Method pembaca elemen pada indeks)",
+        "placeholder": "method get",
+        "expectedAnswer": "get",
+        "acceptedAnswers": [
+          "get"
+        ],
+        "explanation": "Method get(index) mengambil elemen pada indeks tertentu di ArrayList (berbeda dari array yang menggunakan kurung siku [i]).",
+        "points": 5
+      }
+    ],
+    "explanation": "Pada array biasa, ukuran diakses via properti `.length` dan elemen via `arr[i]`. Namun pada ArrayList, ukuran diakses via method `.size()` dan elemen via `.get(i)`.",
+    "commonMistakes": "Menulis bahasa[i] atau bahasa.length pada objek ArrayList.",
+    "sourceFile": "Eng_PBO_4_ArrayAndArrayList_copy.pdf",
+    "sourceLocation": "Slide Halaman 24-27 (ArrayList Methods)",
+    "points": 10
+  },
+  {
+    "id": "Q-47",
+    "topic": "Bab 3: Array dan ArrayList",
+    "subtopic": "Method .set() dan .remove() pada ArrayList",
+    "difficulty": "Sedang",
+    "questionType": "fill-in-the-blanks",
+    "learningObjective": "Memperbarui dan menghapus elemen dalam ArrayList.",
+    "title": "Memperbarui Nilai (.set) dan Menghapus Elemen (.remove) pada ArrayList",
+    "codeTemplate": "import java.util.ArrayList;\n\npublic class ModifikasiList {\n    public static void main(String[] args) {\n        ArrayList<String> hewan = new ArrayList<>();\n        hewan.add(\"Kucing\");\n        hewan.add(\"Kambing\");\n        // Mengganti elemen pada indeks 1 menjadi Sapi:\n        hewan./* BLANK_1 */(1, \"Sapi\");\n        // Menghapus elemen pada indeks 0:\n        hewan./* BLANK_2 */(0);\n    }\n}",
+    "blankDefinitions": [
+      {
+        "id": "BLANK_1",
+        "label": "Blank 1 (Method pengganti nilai)",
+        "placeholder": "method set",
+        "expectedAnswer": "set",
+        "acceptedAnswers": [
+          "set"
+        ],
+        "explanation": "Method set(index, element) mengganti elemen yang berada pada indeks yang ditentukan.",
+        "points": 5
+      },
+      {
+        "id": "BLANK_2",
+        "label": "Blank 2 (Method penghapus elemen)",
+        "placeholder": "method remove",
+        "expectedAnswer": "remove",
+        "acceptedAnswers": [
+          "remove"
+        ],
+        "explanation": "Method remove(index) menghapus elemen pada indeks tertentu dan menggeser elemen setelahnya ke kiri.",
+        "points": 5
+      }
+    ],
+    "explanation": "ArrayList menyediakan method lengkap untuk manipulasi data dinamis: `.set(i, val)` untuk update in-place dan `.remove(i)` untuk penghapusan.",
+    "commonMistakes": "Mengira method pembaruan adalah update() atau replace().",
+    "sourceFile": "Eng_PBO_4_ArrayAndArrayList_copy.pdf",
+    "sourceLocation": "Slide Halaman 27-29 (ArrayList set & remove)",
+    "points": 10
+  },
+  {
+    "id": "Q-48",
+    "topic": "Bab 3: Array dan ArrayList",
+    "subtopic": "Pengurutan Array dengan java.util.Arrays.sort()",
+    "difficulty": "Sedang",
+    "questionType": "fill-in-the-blanks",
+    "learningObjective": "Menggunakan utility class Arrays untuk mengurutkan data numerik.",
+    "title": "Pengurutan Elemen Array Menggunakan Arrays.sort()",
+    "codeTemplate": "import java.util./* BLANK_1 */;\n\npublic class UrutArray {\n    public static void main(String[] args) {\n        int[] angka = {15, 3, 9, 22, 1};\n        // Mengurutkan array angka secara ascending:\n        Arrays./* BLANK_2 */(angka);\n        System.out.println(\"Terkecil: \" + angka[0]); // Menghasilkan 1\n    }\n}",
+    "blankDefinitions": [
+      {
+        "id": "BLANK_1",
+        "label": "Blank 1 (Utility class Arrays)",
+        "placeholder": "nama class",
+        "expectedAnswer": "Arrays",
+        "acceptedAnswers": [
+          "Arrays"
+        ],
+        "explanation": "Class utility Arrays menyediakan berbagai method statis untuk manipulasi array.",
+        "points": 5
+      },
+      {
+        "id": "BLANK_2",
+        "label": "Blank 2 (Method pengurutan)",
+        "placeholder": "method sort",
+        "expectedAnswer": "sort",
+        "acceptedAnswers": [
+          "sort"
+        ],
+        "explanation": "Method sort() mengurutkan elemen array secara in-place dengan algoritma Dual-Pivot Quicksort.",
+        "points": 5
+      }
+    ],
+    "explanation": "`java.util.Arrays.sort(arr)` mengurutkan elemen-elemen array dari kecil ke besar (ascending) secara efisien.",
+    "commonMistakes": "Menulis angka.sort() langsung pada variabel array (karena array bukan class yang memiliki method sort instan).",
+    "sourceFile": "Eng_PBO_4_ArrayAndArrayList_copy.pdf",
+    "sourceLocation": "Slide Halaman 15-18 (java.util.Arrays Utility)",
+    "points": 10
+  },
+  {
+    "id": "Q-49",
+    "topic": "Bab 3: Array dan ArrayList",
+    "subtopic": "Array Multidimensi Akses Baris dan Kolom",
+    "difficulty": "Sulit",
+    "questionType": "fill-in-the-blanks",
+    "learningObjective": "Melakukan traversal bertingkat (nested loop) pada array dua dimensi.",
+    "title": "Nested Loop Traversal Matriks Dua Dimensi Berdasarkan Baris dan Kolom",
+    "codeTemplate": "public class TraversalMatriks {\n    public static void main(String[] args) {\n        int[][] matriks = {\n            {1, 2, 3},\n            {4, 5, 6}\n        };\n        // Loop baris menggunakan matriks.length:\n        for (int b = 0; b < matriks.length; b++) {\n            // Loop kolom menggunakan panjang baris ke-b:\n            for (int k = 0; k < matriks[/* BLANK_1 */].length; k++) {\n                System.out.print(matriks[b][/* BLANK_2 */] + \" \");\n            }\n        }\n    }\n}",
+    "blankDefinitions": [
+      {
+        "id": "BLANK_1",
+        "label": "Blank 1 (Variabel indeks baris)",
+        "placeholder": "indeks baris",
+        "expectedAnswer": "b",
+        "acceptedAnswers": [
+          "b"
+        ],
+        "explanation": "matriks[b].length memberikan jumlah kolom yang ada pada baris ke-b.",
+        "points": 5
+      },
+      {
+        "id": "BLANK_2",
+        "label": "Blank 2 (Variabel indeks kolom)",
+        "placeholder": "indeks kolom",
+        "expectedAnswer": "k",
+        "acceptedAnswers": [
+          "k"
+        ],
+        "explanation": "matriks[b][k] mengakses nilai elemen pada perpotongan baris b dan kolom k.",
+        "points": 5
+      }
+    ],
+    "explanation": "Di Java, array 2D adalah array of arrays. Panjang baris diakses melalui `matriks.length`, sedangkan jumlah kolom tiap baris diakses melalui `matriks[b].length`.",
+    "commonMistakes": "Menggunakan matriks.length pada kedua loop sehingga menyebabkan error jika jumlah kolom berbeda dari jumlah baris.",
+    "sourceFile": "Eng_PBO_4_ArrayAndArrayList_copy.pdf",
+    "sourceLocation": "Slide Halaman 13-14 (Multidimensional Array Traversal)",
+    "points": 10
+  },
+  {
+    "id": "Q-50",
+    "topic": "Bab 4: Abstraksi dan Enkapsulasi",
+    "subtopic": "Access Modifier private untuk Information Hiding",
+    "difficulty": "Mudah",
+    "questionType": "fill-in-the-blanks",
+    "learningObjective": "Melindungi atribut internal class menggunakan access modifier private.",
+    "title": "Penerapan Access Modifier private pada Enkapsulasi Saldo Rekening",
+    "codeTemplate": "public class RekeningBank {\n    // Atribut saldo hanya boleh diakses di dalam class RekeningBank:\n    /* BLANK_1 */ double saldo;\n\n    public RekeningBank(double saldoAwal) {\n        this.saldo = saldoAwal;\n    }\n\n    // Method publik untuk melihat nilai saldo:\n    public double getSaldo() {\n        return this./* BLANK_2 */;\n    }\n}",
+    "blankDefinitions": [
+      {
+        "id": "BLANK_1",
+        "label": "Blank 1 (Access modifier privat)",
+        "placeholder": "modifier akses",
+        "expectedAnswer": "private",
+        "acceptedAnswers": [
+          "private"
+        ],
+        "explanation": "Modifier private menjamin informasi saldo tersembunyi dari modifikasi liar pihak luar.",
+        "points": 5
+      },
+      {
+        "id": "BLANK_2",
+        "label": "Blank 2 (Nama field saldo)",
+        "placeholder": "nama field",
+        "expectedAnswer": "saldo",
+        "acceptedAnswers": [
+          "saldo"
+        ],
+        "explanation": "Getter getSaldo() mengembalikan nilai field instance this.saldo.",
+        "points": 5
+      }
+    ],
+    "explanation": "Pilar Enkapsulasi (Information Hiding) mengajarkan bahwa variabel keadaan (state) objek harus berstatus private, dan interaksi luar dilakukan melalui method accessor (getter) dan mutator (setter).",
+    "commonMistakes": "Membuka field saldo menjadi public sehingga integritas data rekening dapat diubah langsung dari luar.",
+    "sourceFile": "PBO 5 dan 6 - Abstraksi, Enkapsulasi, Pewarisan, Polymorphism (2025)_copy.pdf",
+    "sourceLocation": "Slide Halaman 12-16 (Enkapsulasi dan Modifier)",
+    "points": 10
+  },
+  {
+    "id": "Q-51",
+    "topic": "Bab 4: Abstraksi dan Enkapsulasi",
+    "subtopic": "Setter dengan Validasi Nilai Negatif",
+    "difficulty": "Sedang",
+    "questionType": "fill-in-the-blanks",
+    "learningObjective": "Membuat setter yang memvalidasi integritas data sebelum mengubah instance variable.",
+    "title": "Setter dengan Logika Pemeriksaan Nilai Positif",
+    "codeTemplate": "public class Lingkaran {\n    private double jariJari;\n\n    // Setter dengan validasi nilai:\n    public /* BLANK_1 */ setJariJari(double r) {\n        if (r > 0) {\n            this.jariJari = /* BLANK_2 */;\n        }\n    }\n}",
+    "blankDefinitions": [
+      {
+        "id": "BLANK_1",
+        "label": "Blank 1 (Return type method setter)",
+        "placeholder": "tipe void",
+        "expectedAnswer": "void",
+        "acceptedAnswers": [
+          "void"
+        ],
+        "explanation": "Method mutator / setter umumnya tidak mengembalikan nilai sehingga bertipe void.",
+        "points": 5
+      },
+      {
+        "id": "BLANK_2",
+        "label": "Blank 2 (Nama parameter r)",
+        "placeholder": "parameter input",
+        "expectedAnswer": "r",
+        "acceptedAnswers": [
+          "r"
+        ],
+        "explanation": "Nilai parameter r dimasukkan ke dalam instance variable this.jariJari setelah lulus validasi r > 0.",
+        "points": 5
+      }
+    ],
+    "explanation": "Keuntungan utama enkapsulasi dengan setter adalah kemampuan memasang aturan validasi data (misal nilai jari-jari tidak boleh negatif atau nol).",
+    "commonMistakes": "Lupa memberi return type void pada setter atau langsung mengizinkan semua nilai masuk tanpa validasi.",
+    "sourceFile": "Eng_PBO_5_6_Abstraction_Encapsulation_Inheritance_Polymorphism_copy.pdf",
+    "sourceLocation": "Slide Halaman 14-17 (Information Hiding & Mutator)",
+    "points": 10
+  },
+  {
+    "id": "Q-52",
+    "topic": "Bab 4: Abstraksi dan Enkapsulasi",
+    "subtopic": "Konsep abstract class dan abstract method",
+    "difficulty": "Sedang",
+    "questionType": "fill-in-the-blanks",
+    "learningObjective": "Mendeklarasikan class abstrak dan method abstrak tanpa blok implementasi.",
+    "title": "Deklarasi abstract class Bentuk dan abstract method hitungLuas",
+    "codeTemplate": "public /* BLANK_1 */ class Bentuk {\n    // Method abstrak tidak memiliki blok kode implementasi (diakhiri titik koma):\n    public /* BLANK_1 */ double hitungLuas()/* BLANK_2 */\n}",
+    "blankDefinitions": [
+      {
+        "id": "BLANK_1",
+        "label": "Blank 1 (Keyword abstrak)",
+        "placeholder": "keyword abstract",
+        "expectedAnswer": "abstract",
+        "acceptedAnswers": [
+          "abstract"
+        ],
+        "explanation": "Keyword abstract menandakan class belum dapat diinstansiasi langsung dan method-nya belum memiliki body.",
+        "points": 5
+      },
+      {
+        "id": "BLANK_2",
+        "label": "Blank 2 (Penutup method abstrak)",
+        "placeholder": "tanda titik koma",
+        "expectedAnswer": ";",
+        "acceptedAnswers": [
+          ";"
+        ],
+        "explanation": "Method abstrak wajib diakhiri dengan tanda titik koma (;), bukan kurung kurawal { }.",
+        "points": 5
+      }
+    ],
+    "explanation": "Class abstrak menyediakan cetak biru konsep umum. Method abstrak tidak memiliki body implementasi dan mewajibkan subclass konkret untuk mengimplementasikannya.",
+    "commonMistakes": "Memberikan kurung kurawal kosong { } pada method abstract yang mengakibatkan compile error.",
+    "sourceFile": "PBO 5 dan 6 - Abstraksi, Enkapsulasi, Pewarisan, Polymorphism (2025)_copy.pdf",
+    "sourceLocation": "Slide Halaman 7-10 (Abstraksi Kelas)",
+    "points": 10
+  },
+  {
+    "id": "Q-53",
+    "topic": "Bab 4: Abstraksi dan Enkapsulasi",
+    "subtopic": "Deklarasi interface dan Keyword implements",
+    "difficulty": "Sedang",
+    "questionType": "fill-in-the-blanks",
+    "learningObjective": "Mendefinisikan antarmuka (interface) dan mengimplementasikannya pada class konkret.",
+    "title": "Kontrak Antarmuka dengan Keyword interface dan implements",
+    "codeTemplate": "public /* BLANK_1 */ Bergerak {\n    void maju();\n}\n\npublic class Mobil /* BLANK_2 */ Bergerak {\n    public void maju() {\n        System.out.println(\"Mobil melaju\");\n    }\n}",
+    "blankDefinitions": [
+      {
+        "id": "BLANK_1",
+        "label": "Blank 1 (Keyword antarmuka)",
+        "placeholder": "keyword interface",
+        "expectedAnswer": "interface",
+        "acceptedAnswers": [
+          "interface"
+        ],
+        "explanation": "Keyword interface digunakan untuk mendeklarasikan kontrak antarmuka di Java.",
+        "points": 5
+      },
+      {
+        "id": "BLANK_2",
+        "label": "Blank 2 (Keyword pengimplementasi interface)",
+        "placeholder": "keyword implements",
+        "expectedAnswer": "implements",
+        "acceptedAnswers": [
+          "implements"
+        ],
+        "explanation": "Class menggunakan kata kunci implements untuk memenuhi kontrak method yang ada pada interface.",
+        "points": 5
+      }
+    ],
+    "explanation": "Interface mewakili bentuk abstraksi murni. Suatu class mengadopsi kontrak interface menggunakan keyword `implements`.",
+    "commonMistakes": "Menggunakan extends untuk menghubungkan class dengan interface.",
+    "sourceFile": "PBO 5 dan 6 - Abstraksi, Enkapsulasi, Pewarisan, Polymorphism (2025)_copy.pdf",
+    "sourceLocation": "Slide Halaman 10-12 (Interface vs Class)",
+    "points": 10
+  },
+  {
+    "id": "Q-54",
+    "topic": "Bab 4: Abstraksi dan Enkapsulasi",
+    "subtopic": "Shadowing Variabel dan Keyword this pada Konstruktor",
+    "difficulty": "Mudah",
+    "questionType": "fill-in-the-blanks",
+    "learningObjective": "Menggunakan keyword this untuk menyelesaikan ambiguitas parameter shadowing.",
+    "title": "Membedakan Parameter dan Instance Variable Menggunakan this",
+    "codeTemplate": "public class Pegawai {\n    private String nama;\n\n    public Pegawai(String nama) {\n        // Menyimpan nilai parameter ke instance variable:\n        /* BLANK_1 */.nama = /* BLANK_2 */;\n    }\n}",
+    "blankDefinitions": [
+      {
+        "id": "BLANK_1",
+        "label": "Blank 1 (Keyword referensi objek saat ini)",
+        "placeholder": "keyword this",
+        "expectedAnswer": "this",
+        "acceptedAnswers": [
+          "this"
+        ],
+        "explanation": "Keyword this merujuk kepada instance objek yang sedang berjalan.",
+        "points": 5
+      },
+      {
+        "id": "BLANK_2",
+        "label": "Blank 2 (Nama parameter)",
+        "placeholder": "parameter nama",
+        "expectedAnswer": "nama",
+        "acceptedAnswers": [
+          "nama"
+        ],
+        "explanation": "Variabel nama di sisi kanan adalah nilai yang dikirim melalui parameter konstruktor Pegawai(String nama).",
+        "points": 5
+      }
+    ],
+    "explanation": "Ketika nama parameter konstruktor sama persis dengan nama instance variable (shadowing), kata kunci `this` wajib dipakai untuk merujuk ke atribut class.",
+    "commonMistakes": "Menulis nama = nama yang hanya menugaskan parameter ke dirinya sendiri (tidak mengubah atribut objek).",
+    "sourceFile": "PBO 5 dan 6 - Abstraksi, Enkapsulasi, Pewarisan, Polymorphism (2025)_copy.pdf",
+    "sourceLocation": "Slide Halaman 18-20 (Konstruktor dan this)",
+    "points": 10
+  },
+  {
+    "id": "Q-55",
+    "topic": "Bab 4: Abstraksi dan Enkapsulasi",
+    "subtopic": "Larangan Instansiasi Objek dari abstract class",
+    "difficulty": "Sulit",
+    "questionType": "fill-in-the-blanks",
+    "learningObjective": "Menganalisis sifat bahwa class abstrak tidak dapat dibuatkan objeknya secara langsung dengan new.",
+    "title": "Aturan Instansiasi Abstract Class vs Subclass Konkret",
+    "codeTemplate": "public abstract class Hewan {\n    public abstract void suara();\n}\n\npublic class Kucing extends Hewan {\n    public void suara() { System.out.println(\"Meong\"); }\n\n    public static void main(String[] args) {\n        // Baris berikut ILEGAL dan compile error:\n        // Hewan h = new Hewan(); // Error: Hewan is abstract; cannot be instantiated\n        \n        // Yang LEGAL adalah membuat instance dari class konkret:\n        Hewan k = /* BLANK_1 */ /* BLANK_2 */();\n        k.suara();\n    }\n}",
+    "blankDefinitions": [
+      {
+        "id": "BLANK_1",
+        "label": "Blank 1 (Keyword pembuatan objek)",
+        "placeholder": "keyword new",
+        "expectedAnswer": "new",
+        "acceptedAnswers": [
+          "new"
+        ],
+        "explanation": "Keyword new digunakan untuk instansiasi objek konkret.",
+        "points": 5
+      },
+      {
+        "id": "BLANK_2",
+        "label": "Blank 2 (Nama class konkret)",
+        "placeholder": "nama class Kucing",
+        "expectedAnswer": "Kucing",
+        "acceptedAnswers": [
+          "Kucing"
+        ],
+        "explanation": "Kucing adalah subclass konkret yang telah mengimplementasikan seluruh method abstract dari Hewan.",
+        "points": 5
+      }
+    ],
+    "explanation": "Class abstrak tidak dapat diinstansiasi langsung (`new Hewan()` memicu compiler error). Instansiasi harus dilakukan melalui subclass konkret (`new Kucing()`).",
+    "commonMistakes": "Mengira abstract class bisa langsung diinstansiasi asalkan memiliki konstruktor default.",
+    "sourceFile": "PBO 5 dan 6 - Abstraksi, Enkapsulasi, Pewarisan, Polymorphism (2025)_copy.pdf",
+    "sourceLocation": "Slide Halaman 8-9 (Larangan Instansiasi Abstract Class)",
+    "points": 10
+  },
+  {
+    "id": "Q-56",
+    "topic": "Bab 4: Abstraksi dan Enkapsulasi",
+    "subtopic": "Implementasi Banyak Interface (Multiple Interface Implementation)",
+    "difficulty": "Sedang",
+    "questionType": "fill-in-the-blanks",
+    "learningObjective": "Mengimplementasikan lebih dari satu interface sekaligus dalam satu class.",
+    "title": "Implementasi Multiple Interface Menggunakan Tanda Koma",
+    "codeTemplate": "public interface BisaTerbang { void terbang(); }\npublic interface BisaBerenang { void berenang(); }\n\n// Bebek mengimplementasikan kedua interface sekaligus:\npublic class Bebek implements BisaTerbang/* BLANK_1 */ /* BLANK_2 */ {\n    public void terbang() { System.out.println(\"Terbang rendah\"); }\n    public void berenang() { System.out.println(\"Berenang di air\"); }\n}",
+    "blankDefinitions": [
+      {
+        "id": "BLANK_1",
+        "label": "Blank 1 (Koma pemisah interface)",
+        "placeholder": "tanda koma",
+        "expectedAnswer": ",",
+        "acceptedAnswers": [
+          ","
+        ],
+        "explanation": "Tanda koma , digunakan untuk memisahkan nama-nama interface yang diimplementasikan.",
+        "points": 5
+      },
+      {
+        "id": "BLANK_2",
+        "label": "Blank 2 (Nama interface kedua)",
+        "placeholder": "nama interface",
+        "expectedAnswer": "BisaBerenang",
+        "acceptedAnswers": [
+          "BisaBerenang"
+        ],
+        "explanation": "Interface BisaBerenang diimplementasikan bersama BisaTerbang.",
+        "points": 5
+      }
+    ],
+    "explanation": "Java tidak mengizinkan multiple inheritance pada class (`extends A, B` dilarang), namun mengizinkan implementasi banyak interface sekaligus dipisahkan tanda koma (`implements A, B`).",
+    "commonMistakes": "Menulis kata implements dua kali (implements A implements B).",
+    "sourceFile": "Eng_PBO_5_6_Abstraction_Encapsulation_Inheritance_Polymorphism_copy.pdf",
+    "sourceLocation": "Slide Halaman 11-13 (Multiple Interface Implementation)",
+    "points": 10
+  },
+  {
+    "id": "Q-57",
+    "topic": "Bab 4: Abstraksi dan Enkapsulasi",
+    "subtopic": "Kaidah Access Modifier pada Method Interface",
+    "difficulty": "Sulit",
+    "questionType": "fill-in-the-blanks",
+    "learningObjective": "Memahami bahwa method interface secara implisit bersifat public abstract.",
+    "title": "Modifier Wajib public Saat Mengimplementasikan Method Interface",
+    "codeTemplate": "public interface Hitung {\n    // Di interface, method secara implisit berstatus public abstract:\n    int kaliDua(int n);\n}\n\npublic class Kalkulator implements Hitung {\n    // Saat diimplementasikan di subclass, modifier TIDAK boleh default, WAJIB public:\n    /* BLANK_1 */ int kaliDua(int n) {\n        return n /* BLANK_2 */ 2;\n    }\n}",
+    "blankDefinitions": [
+      {
+        "id": "BLANK_1",
+        "label": "Blank 1 (Modifier public wajib)",
+        "placeholder": "modifier public",
+        "expectedAnswer": "public",
+        "acceptedAnswers": [
+          "public"
+        ],
+        "explanation": "Method pengimplementasi interface wajib memiliki modifier public karena method interface secara default adalah public.",
+        "points": 5
+      },
+      {
+        "id": "BLANK_2",
+        "label": "Blank 2 (Operator perkalian)",
+        "placeholder": "operator kali",
+        "expectedAnswer": "*",
+        "acceptedAnswers": [
+          "*"
+        ],
+        "explanation": "Operator tanda bintang * melakukan operasi perkalian n * 2.",
+        "points": 5
+      }
+    ],
+    "explanation": "Di Java, semua deklarasi method pada interface secara otomatis berstatus `public abstract`. Ketika suatu class mengimplementasikan method tersebut, ia tidak boleh mempersempit hak aksesnya (misal menjadi default package-private), sehingga kata kunci `public` wajib disertakan.",
+    "commonMistakes": "Lupa menulis modifier public di class pengimplementasi sehingga memicu compile error 'attempting to assign weaker access privileges'.",
+    "sourceFile": "Eng_PBO_5_6_Abstraction_Encapsulation_Inheritance_Polymorphism_copy.pdf",
+    "sourceLocation": "Slide Halaman 12-14 (Interface Method Access Rules)",
+    "points": 10
+  },
+  {
+    "id": "Q-58",
+    "topic": "Bab 5: Pewarisan (Inheritance)",
+    "subtopic": "Hubungan Is-A dan Pewarisan Single Inheritance",
+    "difficulty": "Mudah",
+    "questionType": "fill-in-the-blanks",
+    "learningObjective": "Mendeklarasikan pewarisan kelas menggunakan kata kunci extends.",
+    "title": "Pewarisan Hubungan Is-A Class Dosen Menuruni Pegawai",
+    "codeTemplate": "public class Pegawai {\n    protected String nip;\n}\n\n// Dosen adalah seorang Pegawai (is-a relationship):\npublic class Dosen /* BLANK_1 */ Pegawai {\n    private String fakultas;\n\n    public void info() {\n        System.out.println(\"NIP: \" + /* BLANK_2 */.nip);\n    }\n}",
+    "blankDefinitions": [
+      {
+        "id": "BLANK_1",
+        "label": "Blank 1 (Keyword pewarisan)",
+        "placeholder": "keyword extends",
+        "expectedAnswer": "extends",
+        "acceptedAnswers": [
+          "extends"
+        ],
+        "explanation": "Keyword extends digunakan oleh subclass untuk mewarisi superclass.",
+        "points": 5
+      },
+      {
+        "id": "BLANK_2",
+        "label": "Blank 2 (Keyword referensi objek ini)",
+        "placeholder": "keyword this",
+        "expectedAnswer": "this",
+        "acceptedAnswers": [
+          "this"
+        ],
+        "explanation": "this.nip mengakses atribut nip yang diwarisi dari parent class Pegawai.",
+        "points": 5
+      }
+    ],
+    "explanation": "Pewarisan di Java menggunakan kata kunci `extends`. Subclass mewarisi seluruh anggota non-private milik superclass, sehingga `this.nip` dapat diakses langsung karena berstatus `protected`.",
+    "commonMistakes": "Menggunakan kata inherits yang bukan keyword Java.",
+    "sourceFile": "PBO 5 dan 6 - Abstraksi, Enkapsulasi, Pewarisan, Polymorphism (2025)_copy.pdf",
+    "sourceLocation": "Slide Halaman 24-27 (Pewarisan & extends)",
+    "points": 10
+  },
+  {
+    "id": "Q-59",
+    "topic": "Bab 5: Pewarisan (Inheritance)",
+    "subtopic": "Aturan Pemanggilan super() pada Baris Pertama Konstruktor",
+    "difficulty": "Sedang",
+    "questionType": "fill-in-the-blanks",
+    "learningObjective": "Memanggil konstruktor superclass berparameter secara eksplisit.",
+    "title": "Pemanggilan Konstruktor Parent Menggunakan super(parameter)",
+    "codeTemplate": "public class Kendaraan {\n    protected String nomorPolisi;\n    public Kendaraan(String nopol) {\n        this.nomorPolisi = nopol;\n    }\n}\n\npublic class Truk extends Kendaraan {\n    private double kapasitasMuatan;\n\n    public Truk(String nopol, double kapasitas) {\n        // Wajib berada di baris pertama konstruktor:\n        /* BLANK_1 */(nopol);\n        this.kapasitasMuatan = /* BLANK_2 */;\n    }\n}",
+    "blankDefinitions": [
+      {
+        "id": "BLANK_1",
+        "label": "Blank 1 (Pemanggilan konstruktor parent)",
+        "placeholder": "keyword super",
+        "expectedAnswer": "super",
+        "acceptedAnswers": [
+          "super"
+        ],
+        "explanation": "super(nopol) mengeksekusi konstruktor Kendaraan(String nopol) milik superclass.",
+        "points": 5
+      },
+      {
+        "id": "BLANK_2",
+        "label": "Blank 2 (Nama parameter kapasitas)",
+        "placeholder": "parameter kapasitas",
+        "expectedAnswer": "kapasitas",
+        "acceptedAnswers": [
+          "kapasitas"
+        ],
+        "explanation": "Nilai parameter kapasitas disimpan ke atribut this.kapasitasMuatan.",
+        "points": 5
+      }
+    ],
+    "explanation": "Jika superclass hanya memiliki konstruktor berparameter, subclass WAJIB memanggil `super(argumen)` secara eksplisit dan tepat pada baris pertama konstruktornya.",
+    "commonMistakes": "Menaruh pemanggilan super() setelah this.kapasitasMuatan yang akan ditolak oleh compiler.",
+    "sourceFile": "PBO 5 dan 6 - Abstraksi, Enkapsulasi, Pewarisan, Polymorphism (2025)_copy.pdf",
+    "sourceLocation": "Slide Halaman 45-50 (Constructor Chaining)",
+    "points": 10
+  },
+  {
+    "id": "Q-60",
+    "topic": "Bab 5: Pewarisan (Inheritance)",
+    "subtopic": "Pemanggilan Method Superclass dengan super.method()",
+    "difficulty": "Sedang",
+    "questionType": "fill-in-the-blanks",
+    "learningObjective": "Menggunakan super.method() untuk memanggil logika asal yang telah dioverride di subclass.",
+    "title": "Memperkaya Perilaku Parent dengan Pemanggilan super.cetakInfo()",
+    "codeTemplate": "public class Akun {\n    public void tampilkan() {\n        System.out.println(\"Info Akun Dasar\");\n    }\n}\n\npublic class AkunTabungan extends Akun {\n    @Override\n    public void tampilkan() {\n        // Memanggil logika method parent terlebih dahulu:\n        /* BLANK_1 */./* BLANK_2 */();\n        System.out.println(\"Bunga: 2.5%\");\n    }\n}",
+    "blankDefinitions": [
+      {
+        "id": "BLANK_1",
+        "label": "Blank 1 (Keyword referensi superclass)",
+        "placeholder": "keyword super",
+        "expectedAnswer": "super",
+        "acceptedAnswers": [
+          "super"
+        ],
+        "explanation": "Keyword super merujuk ke superclass langsung.",
+        "points": 5
+      },
+      {
+        "id": "BLANK_2",
+        "label": "Blank 2 (Nama method parent)",
+        "placeholder": "nama method",
+        "expectedAnswer": "tampilkan",
+        "acceptedAnswers": [
+          "tampilkan"
+        ],
+        "explanation": "super.tampilkan() mengeksekusi versi method tampilkan() milik class Akun.",
+        "points": 5
+      }
+    ],
+    "explanation": "Sintaks `super.namaMethod()` memungkinkan subclass menjalankan logika yang sudah didefinisikan di parent class sebelum atau sesudah menambahkan logika spesifiknya sendiri.",
+    "commonMistakes": "Menulis this.tampilkan() di dalam tampilkan() yang mengakibatkan rekursi tak terbatas (StackOverflowError).",
+    "sourceFile": "PBO 5 dan 6 - Abstraksi, Enkapsulasi, Pewarisan, Polymorphism (2025)_copy.pdf",
+    "sourceLocation": "Slide Halaman 72-74 (super method invocation)",
+    "points": 10
+  },
+  {
+    "id": "Q-61",
+    "topic": "Bab 5: Pewarisan (Inheritance)",
+    "subtopic": "Kelas Dasar java.lang.Object",
+    "difficulty": "Mudah",
+    "questionType": "fill-in-the-blanks",
+    "learningObjective": "Memahami bahwa seluruh class di Java secara otomatis menuruni java.lang.Object.",
+    "title": "Akar Hirarki Semua Class di Java: Class Object",
+    "codeTemplate": "// Setiap class yang tidak menuliskan extends secara eksplisit\n// secara otomatis menuruni class tertinggi di Java:\npublic class Barang /* BLANK_1 */ java.lang./* BLANK_2 */ {\n    // Otomatis mewarisi method toString(), equals(), hashCode()\n}",
+    "blankDefinitions": [
+      {
+        "id": "BLANK_1",
+        "label": "Blank 1 (Keyword pewarisan implisit)",
+        "placeholder": "keyword extends",
+        "expectedAnswer": "extends",
+        "acceptedAnswers": [
+          "extends"
+        ],
+        "explanation": "Compiler Java secara implisit menambahkan extends Object jika class tidak meng-extend class lain.",
+        "points": 5
+      },
+      {
+        "id": "BLANK_2",
+        "label": "Blank 2 (Nama superclass tertinggi)",
+        "placeholder": "nama class Object",
+        "expectedAnswer": "Object",
+        "acceptedAnswers": [
+          "Object"
+        ],
+        "explanation": "java.lang.Object adalah root/akar dari seluruh hirarki class di ekosistem Java.",
+        "points": 5
+      }
+    ],
+    "explanation": "Semua kelas di Java adalah turunan langsung atau tidak langsung dari `java.lang.Object`. Dari sinilah semua objek memperoleh method bawaan seperti `toString()` dan `equals()`.",
+    "commonMistakes": "Mengira class yang tidak memiliki extends berdiri sendiri tanpa parent.",
+    "sourceFile": "Eng_PBO_5_6_Abstraction_Encapsulation_Inheritance_Polymorphism_copy.pdf",
+    "sourceLocation": "Slide Halaman 33-35 (The Universal Superclass: Object)",
+    "points": 10
+  },
+  {
+    "id": "Q-62",
+    "topic": "Bab 5: Pewarisan (Inheritance)",
+    "subtopic": "Larangan Pewarisan Ganda (Multiple Inheritance) Kelas",
+    "difficulty": "Sulit",
+    "questionType": "fill-in-the-blanks",
+    "learningObjective": "Memahami alasan mengapa Java melarang multiple inheritance class untuk mencegah ambiguitas.",
+    "title": "Single Inheritance pada Class Java untuk Menghindari Diamond Problem",
+    "codeTemplate": "class A { void tes() {} }\nclass B { void tes() {} }\n\n// Java MELARANG sintaks pewarisan dua class langsung seperti ini:\n// class C extends A, B { } // Compile Error!\n\n// Untuk mengatasinya, class hanya extends tepat /* BLANK_1 */ superclass,\n// namun dapat implements banyak /* BLANK_2 */:\nclass C extends A implements Antarmuka1, Antarmuka2 { }",
+    "blankDefinitions": [
+      {
+        "id": "BLANK_1",
+        "label": "Blank 1 (Jumlah superclass langsung yang diizinkan)",
+        "placeholder": "angka satu",
+        "expectedAnswer": "1",
+        "acceptedAnswers": [
+          "1",
+          "satu",
+          "one"
+        ],
+        "explanation": "Java menerapkan Single Inheritance: satu class hanya boleh meng-extend 1 class lain secara langsung.",
+        "points": 5
+      },
+      {
+        "id": "BLANK_2",
+        "label": "Blank 2 (Tipe antarmuka)",
+        "placeholder": "tipe interface",
+        "expectedAnswer": "interface",
+        "acceptedAnswers": [
+          "interface",
+          "interfaces"
+        ],
+        "explanation": "Kemampuan mewarisi banyak kontrak behavior dicapai melalui interface.",
+        "points": 5
+      }
+    ],
+    "explanation": "Java sengaja tidak mendukung multiple class inheritance demi menghindari 'Diamond Problem' (ambiguitas ketika dua parent memiliki method dengan nama sama). Solusinya adalah single class inheritance dikombinasikan dengan multiple interface implementation.",
+    "commonMistakes": "Mencoba menulis extends A, B di Java.",
+    "sourceFile": "PBO 5 dan 6 - Abstraksi, Enkapsulasi, Pewarisan, Polymorphism (2025)_copy.pdf",
+    "sourceLocation": "Slide Halaman 26-27 (Single Inheritance Rule)",
+    "points": 10
+  },
+  {
+    "id": "Q-63",
+    "topic": "Bab 5: Pewarisan (Inheritance)",
+    "subtopic": "Pewarisan Bertingkat (Multilevel Inheritance)",
+    "difficulty": "Sedang",
+    "questionType": "fill-in-the-blanks",
+    "learningObjective": "Melengkapi rantai pewarisan bertingkat dari Kakek -> Ayah -> Anak.",
+    "title": "Pewarisan Bertingkat: Kendaraan -> Mobil -> MobilListrik",
+    "codeTemplate": "public class Kendaraan { }\n\npublic class Mobil extends Kendaraan { }\n\n// MobilListrik adalah turunan dari Mobil (Multilevel Inheritance):\npublic class MobilListrik /* BLANK_1 */ Mobil {\n    private int kapasitasBaterai;\n    // MobilListrik secara tidak langsung juga adalah sebuah /* BLANK_2 */\n}",
+    "blankDefinitions": [
+      {
+        "id": "BLANK_1",
+        "label": "Blank 1 (Keyword extends)",
+        "placeholder": "keyword extends",
+        "expectedAnswer": "extends",
+        "acceptedAnswers": [
+          "extends"
+        ],
+        "explanation": "MobilListrik meng-extend Mobil.",
+        "points": 5
+      },
+      {
+        "id": "BLANK_2",
+        "label": "Blank 2 (Nama superclass kakek)",
+        "placeholder": "nama class",
+        "expectedAnswer": "Kendaraan",
+        "acceptedAnswers": [
+          "Kendaraan"
+        ],
+        "explanation": "Karena Mobil extends Kendaraan, maka MobilListrik secara transitif juga adalah sebuah Kendaraan.",
+        "points": 5
+      }
+    ],
+    "explanation": "Pewarisan bertingkat (Multilevel) sah di Java. Objek MobilListrik mewarisi seluruh anggota non-private dari Mobil sekaligus anggota dari Kendaraan.",
+    "commonMistakes": "Mengira MobilListrik tidak mewarisi atribut milik Kendaraan.",
+    "sourceFile": "Eng_PBO_5_6_Abstraction_Encapsulation_Inheritance_Polymorphism_copy.pdf",
+    "sourceLocation": "Slide Halaman 28-30 (Inheritance Hierarchies)",
+    "points": 10
+  },
+  {
+    "id": "Q-64",
+    "topic": "Bab 5: Pewarisan (Inheritance)",
+    "subtopic": "Modifier final pada Class Mencegah Pewarisan",
+    "difficulty": "Sedang",
+    "questionType": "fill-in-the-blanks",
+    "learningObjective": "Mencegah suatu class agar tidak dapat diturunkan lagi dengan modifier final.",
+    "title": "Mencegah Subclassing Menggunakan Modifier final pada Deklarasi Class",
+    "codeTemplate": "// Class ini tidak dapat di-extend oleh class mana pun di kemudian hari:\npublic /* BLANK_1 */ class KeamananKetat {\n    // Contoh nyata di Java: class java.lang.String juga bersifat final!\n}\n\n// Baris berikut akan menyebabkan Compile Error:\n// public class Bobol extends KeamananKetat { } // Error: cannot inherit from /* BLANK_2 */ KeamananKetat",
+    "blankDefinitions": [
+      {
+        "id": "BLANK_1",
+        "label": "Blank 1 (Modifier pengunci class)",
+        "placeholder": "modifier final",
+        "expectedAnswer": "final",
+        "acceptedAnswers": [
+          "final"
+        ],
+        "explanation": "Modifier final pada deklarasi class mencegah class tersebut dijadikan superclass bagi class lain.",
+        "points": 5
+      },
+      {
+        "id": "BLANK_2",
+        "label": "Blank 2 (Penyebab error final)",
+        "placeholder": "kata final",
+        "expectedAnswer": "final",
+        "acceptedAnswers": [
+          "final"
+        ],
+        "explanation": "Pesan error kompilator berbunyi 'cannot inherit from final KeamananKetat'.",
+        "points": 5
+      }
+    ],
+    "explanation": "Modifier `final` pada class menghentikan rantai pewarisan demi keamanan atau desain yang immutable (seperti pada `java.lang.String` dan class wrapper).",
+    "commonMistakes": "Mengira modifier private pada class memiliki efek yang sama dengan final.",
+    "sourceFile": "PBO 5 dan 6 - Abstraksi, Enkapsulasi, Pewarisan, Polymorphism (2025)_copy.pdf",
+    "sourceLocation": "Slide Halaman 54-56 (Final Classes)",
+    "points": 10
+  },
+  {
+    "id": "Q-65",
+    "topic": "Bab 5: Pewarisan (Inheritance)",
+    "subtopic": "Pewarisan Method Matematika dan MatematikaCanggih",
+    "difficulty": "Mudah",
+    "questionType": "fill-in-the-blanks",
+    "learningObjective": "Memperluas fungsionalitas class Matematika dasar dengan operasi modulus.",
+    "title": "Pengembangan MatematikaCanggih Menggunakan Konsep Pewarisan di Kuliah PBO UNRAM",
+    "codeTemplate": "public class Matematika {\n    public int pertambahan(int a, int b) { return a + b; }\n}\n\npublic class MatematikaCanggih /* BLANK_1 */ Matematika {\n    // Menambahkan method baru modulus:\n    public int modulus(int a, int b) {\n        return a /* BLANK_2 */ b;\n    }\n}",
+    "blankDefinitions": [
+      {
+        "id": "BLANK_1",
+        "label": "Blank 1 (Keyword extends)",
+        "placeholder": "keyword extends",
+        "expectedAnswer": "extends",
+        "acceptedAnswers": [
+          "extends"
+        ],
+        "explanation": "MatematikaCanggih extends Matematika untuk mewarisi method pertambahan, pengurangan, dll.",
+        "points": 5
+      },
+      {
+        "id": "BLANK_2",
+        "label": "Blank 2 (Operator modulus)",
+        "placeholder": "operator persen",
+        "expectedAnswer": "%",
+        "acceptedAnswers": [
+          "%"
+        ],
+        "explanation": "Operator % menghasilkan sisa bagi a % b.",
+        "points": 5
+      }
+    ],
+    "explanation": "Contoh studi kasus praktikum UNRAM: MatematikaCanggih mewarisi seluruh kemampuan Matematika dasar dan menambahkan kemampuan khusus seperti operasi modulus.",
+    "commonMistakes": "Menulis ulang method pertambahan di subclass padahal sudah diwariskan dari parent.",
+    "sourceFile": "PBO 5 dan 6 - Abstraksi, Enkapsulasi, Pewarisan, Polymorphism (2025)_copy.pdf",
+    "sourceLocation": "Slide Halaman 62-65 (Latihan MatematikaCanggih)",
+    "points": 10
+  },
+  {
+    "id": "Q-66",
+    "topic": "Bab 5: Pewarisan (Inheritance)",
+    "subtopic": "Constructor Chaining Default Tanpa Argumen",
+    "difficulty": "Sulit",
+    "questionType": "fill-in-the-blanks",
+    "learningObjective": "Menganalisis urutan eksekusi konstruktor saat objek subclass dibuat.",
+    "title": "Urutan Eksekusi Output Konstruktor Superclass dan Subclass",
+    "codeTemplate": "class Induk {\n    public Induk() {\n        System.out.print(\"Induk-\");\n    }\n}\n\nclass Anak extends Induk {\n    public Anak() {\n        // Kompiler otomatis menyisipkan /* BLANK_1 */() di sini!\n        System.out.print(\"Anak\");\n    }\n    public static void main(String[] args) {\n        new Anak(); // Menghasilkan cetakan: /* BLANK_2 */\n    }\n}",
+    "blankDefinitions": [
+      {
+        "id": "BLANK_1",
+        "label": "Blank 1 (Panggilan implisit super)",
+        "placeholder": "keyword super",
+        "expectedAnswer": "super",
+        "acceptedAnswers": [
+          "super"
+        ],
+        "explanation": "Compiler otomatis menyisipkan super() jika tidak ada pemanggilan super() eksplisit.",
+        "points": 5
+      },
+      {
+        "id": "BLANK_2",
+        "label": "Blank 2 (Teks keluaran)",
+        "placeholder": "output teks",
+        "expectedAnswer": "Induk-Anak",
+        "acceptedAnswers": [
+          "Induk-Anak"
+        ],
+        "explanation": "Konstruktor Induk dieksekusi lebih dahulu mencetak 'Induk-', baru kemudian konstruktor Anak mencetak 'Anak'.",
+        "points": 5
+      }
+    ],
+    "explanation": "Dalam rantai konstruktor (Constructor Chaining), konstruktor superclass SELALU dijalankan terlebih dahulu sebelum instruksi pada konstruktor subclass dijalankan.",
+    "commonMistakes": "Mengira output-nya adalah 'Anak-Induk' atau hanya 'Anak'.",
+    "sourceFile": "Eng_PBO_5_6_Abstraction_Encapsulation_Inheritance_Polymorphism_copy.pdf",
+    "sourceLocation": "Slide Halaman 48-52 (Constructor Chaining Output)",
+    "points": 10
+  },
+  {
+    "id": "Q-67",
+    "topic": "Bab 6: Polimorfisme (Polymorphism)",
+    "subtopic": "Overloading Berdasarkan Tipe Parameter",
+    "difficulty": "Mudah",
+    "questionType": "fill-in-the-blanks",
+    "learningObjective": "Membuat method overloading dengan membedakan tipe data parameter.",
+    "title": "Method Overloading Cetak untuk Tipe Integer dan String",
+    "codeTemplate": "public class Pencetak {\n    // Method 1: menerima int\n    public void cetak(/* BLANK_1 */ angka) {\n        System.out.println(\"Angka: \" + angka);\n    }\n\n    // Method 2: overloaded menerima String dengan nama method sama:\n    public void /* BLANK_2 */(String teks) {\n        System.out.println(\"Teks: \" + teks);\n    }\n}",
+    "blankDefinitions": [
+      {
+        "id": "BLANK_1",
+        "label": "Blank 1 (Tipe data int)",
+        "placeholder": "tipe int",
+        "expectedAnswer": "int",
+        "acceptedAnswers": [
+          "int"
+        ],
+        "explanation": "Parameter pertama bertipe int.",
+        "points": 5
+      },
+      {
+        "id": "BLANK_2",
+        "label": "Blank 2 (Nama method yang sama)",
+        "placeholder": "nama method cetak",
+        "expectedAnswer": "cetak",
+        "acceptedAnswers": [
+          "cetak"
+        ],
+        "explanation": "Overloading mensyaratkan NAMA METHOD YANG SAMA (cetak) dengan parameter berbeda.",
+        "points": 5
+      }
+    ],
+    "explanation": "Method Overloading adalah bentuk Compile-Time Polymorphism di mana beberapa method dalam class yang sama memiliki nama persis sama namun daftar parameter berbeda.",
+    "commonMistakes": "Mengubah nama method saat berniat melakukan overloading.",
+    "sourceFile": "PBO 5 dan 6 - Abstraksi, Enkapsulasi, Pewarisan, Polymorphism (2025)_copy.pdf",
+    "sourceLocation": "Slide Halaman 68-71 (Overloading Rules)",
+    "points": 10
+  },
+  {
+    "id": "Q-68",
+    "topic": "Bab 6: Polimorfisme (Polymorphism)",
+    "subtopic": "Overloading Konstruktor",
+    "difficulty": "Sedang",
+    "questionType": "fill-in-the-blanks",
+    "learningObjective": "Menyediakan beberapa konstruktor dengan variasi argumen yang berbeda.",
+    "title": "Overloading Konstruktor Default dan Konstruktor Berparameter",
+    "codeTemplate": "public class Mahasiswa {\n    private String nama;\n    private int angkatan;\n\n    // Konstruktor 1: default\n    public /* BLANK_1 */() {\n        this.nama = \"Anonim\";\n        this.angkatan = 2024;\n    }\n\n    // Konstruktor 2: overloaded dengan parameter\n    public /* BLANK_1 */(String nama, int angkatan) {\n        this.nama = nama;\n        this.angkatan = /* BLANK_2 */;\n    }\n}",
+    "blankDefinitions": [
+      {
+        "id": "BLANK_1",
+        "label": "Blank 1 (Nama konstruktor)",
+        "placeholder": "nama class Mahasiswa",
+        "expectedAnswer": "Mahasiswa",
+        "acceptedAnswers": [
+          "Mahasiswa"
+        ],
+        "explanation": "Konstruktor wajib memiliki nama yang sama persis dengan nama class (Mahasiswa).",
+        "points": 5
+      },
+      {
+        "id": "BLANK_2",
+        "label": "Blank 2 (Parameter angkatan)",
+        "placeholder": "parameter angkatan",
+        "expectedAnswer": "angkatan",
+        "acceptedAnswers": [
+          "angkatan"
+        ],
+        "explanation": "Nilai parameter angkatan disalin ke atribut this.angkatan.",
+        "points": 5
+      }
+    ],
+    "explanation": "Konstruktor dapat di-overload untuk memberikan fleksibilitas saat pembuatan objek, misalnya membuat objek dengan nilai default atau dengan data lengkap.",
+    "commonMistakes": "Memberikan return type seperti void pada konstruktor yang menjadikannya method biasa.",
+    "sourceFile": "PBO 5 dan 6 - Abstraksi, Enkapsulasi, Pewarisan, Polymorphism (2025)_copy.pdf",
+    "sourceLocation": "Slide Halaman 74-75 (Overloading Constructor Employee)",
+    "points": 10
+  },
+  {
+    "id": "Q-69",
+    "topic": "Bab 6: Polimorfisme (Polymorphism)",
+    "subtopic": "Anotasi @Override dan Validasi Signature",
+    "difficulty": "Mudah",
+    "questionType": "fill-in-the-blanks",
+    "learningObjective": "Menggunakan anotasi @Override untuk memastikan method benar-benar menimpa method parent.",
+    "title": "Anotasi @Override pada Method Suara Class Turunan Anjing",
+    "codeTemplate": "class Hewan {\n    public void bersuara() {\n        System.out.println(\"Suara hewan\");\n    }\n}\n\nclass Anjing extends Hewan {\n    // Anotasi penanda method overriding ke compiler:\n    /* BLANK_1 */\n    public void /* BLANK_2 */() {\n        System.out.println(\"Guk guk\");\n    }\n}",
+    "blankDefinitions": [
+      {
+        "id": "BLANK_1",
+        "label": "Blank 1 (Anotasi Override)",
+        "placeholder": "anotasi @Override",
+        "expectedAnswer": "@Override",
+        "acceptedAnswers": [
+          "@Override"
+        ],
+        "explanation": "Anotasi @Override memberitahu compiler bahwa method ini sengaja menimpa method dari superclass.",
+        "points": 5
+      },
+      {
+        "id": "BLANK_2",
+        "label": "Blank 2 (Nama method bersuara)",
+        "placeholder": "nama method",
+        "expectedAnswer": "bersuara",
+        "acceptedAnswers": [
+          "bersuara"
+        ],
+        "explanation": "Nama method harus sama persis dengan method superclass (bersuara).",
+        "points": 5
+      }
+    ],
+    "explanation": "Anotasi `@Override` sangat penting karena jika kita salah mengetik nama method (misal suara()), compiler akan langsung mengeluarkan pesan error saat kompilasi.",
+    "commonMistakes": "Lupa menyertakan simbol @ atau salah ketik huruf kapital (@override alih-alih @Override).",
+    "sourceFile": "PBO 5 dan 6 - Abstraksi, Enkapsulasi, Pewarisan, Polymorphism (2025)_copy.pdf",
+    "sourceLocation": "Slide Halaman 76-78 (Overriding & @Override)",
+    "points": 10
+  },
+  {
+    "id": "Q-70",
+    "topic": "Bab 6: Polimorfisme (Polymorphism)",
+    "subtopic": "Dynamic Method Dispatch",
+    "difficulty": "Sulit",
+    "questionType": "fill-in-the-blanks",
+    "learningObjective": "Memahami mekanisme runtime dynamic dispatch ketika referensi superclass memanggil method objek konkret subclass.",
+    "title": "Dynamic Method Dispatch: Eksekusi Sesuai Objek Aktual Saat Runtime",
+    "codeTemplate": "class Bentuk {\n    void gambar() { System.out.println(\"Gambar Bentuk\"); }\n}\n\nclass Lingkaran extends Bentuk {\n    void gambar() { System.out.println(\"Gambar Lingkaran\"); }\n}\n\npublic class UjiPolimorfisme {\n    public static void main(String[] args) {\n        // Variabel referensi bertipe Bentuk menunjuk ke objek nyata Lingkaran:\n        Bentuk b = /* BLANK_1 */ Lingkaran();\n        b./* BLANK_2 */(); // Menghasilkan cetakan: Gambar Lingkaran!\n    }\n}",
+    "blankDefinitions": [
+      {
+        "id": "BLANK_1",
+        "label": "Blank 1 (Keyword new)",
+        "placeholder": "keyword new",
+        "expectedAnswer": "new",
+        "acceptedAnswers": [
+          "new"
+        ],
+        "explanation": "Keyword new membuat objek nyata bertipe Lingkaran di memori heap.",
+        "points": 5
+      },
+      {
+        "id": "BLANK_2",
+        "label": "Blank 2 (Pemanggilan method gambar)",
+        "placeholder": "method gambar",
+        "expectedAnswer": "gambar",
+        "acceptedAnswers": [
+          "gambar"
+        ],
+        "explanation": "b.gambar() memicu dynamic dispatch memanggil method gambar milik class Lingkaran.",
+        "points": 5
+      }
+    ],
+    "explanation": "Meskipun tipe referensi `b` adalah `Bentuk`, saat runtime JVM melihat bahwa objek nyatanya adalah `Lingkaran`, sehingga method `gambar()` milik `Lingkaran` yang dieksekusi.",
+    "commonMistakes": "Mengira method milik class Bentuk yang dieksekusi karena tipe variabelnya Bentuk.",
+    "sourceFile": "Eng_PBO_5_6_Abstraction_Encapsulation_Inheritance_Polymorphism_copy.pdf",
+    "sourceLocation": "Slide Halaman 80-84 (Dynamic Method Dispatch)",
+    "points": 10
+  },
+  {
+    "id": "Q-71",
+    "topic": "Bab 6: Polimorfisme (Polymorphism)",
+    "subtopic": "Koleksi Heterogen Poligon dan PoligonBeraksi",
+    "difficulty": "Sedang",
+    "questionType": "fill-in-the-blanks",
+    "learningObjective": "Menyimpan berbagai subclass dalam satu array superclass polimorfik.",
+    "title": "Koleksi Heterogen Poligon dari Studi Kasus Slide Kuliah UNRAM",
+    "codeTemplate": "public class TesPoligon {\n    public static void main(String[] args) {\n        // Array polimorfik bertipe superclass Poligon:\n        /* BLANK_1 */[] daftar = new Poligon[2];\n        daftar[0] = new SegiEmpat();\n        daftar[1] = new SegiTiga();\n\n        for (Poligon p : daftar) {\n            System.out.println(p./* BLANK_2 */());\n        }\n    }\n}",
+    "blankDefinitions": [
+      {
+        "id": "BLANK_1",
+        "label": "Blank 1 (Tipe superclass array)",
+        "placeholder": "nama class Poligon",
+        "expectedAnswer": "Poligon",
+        "acceptedAnswers": [
+          "Poligon"
+        ],
+        "explanation": "Array bertipe superclass Poligon dapat menampung objek SegiEmpat maupun SegiTiga.",
+        "points": 5
+      },
+      {
+        "id": "BLANK_2",
+        "label": "Blank 2 (Method display)",
+        "placeholder": "method display",
+        "expectedAnswer": "display",
+        "acceptedAnswers": [
+          "display"
+        ],
+        "explanation": "Method display() dideklarasikan di Poligon dan dioverride di SegiEmpat serta SegiTiga.",
+        "points": 5
+      }
+    ],
+    "explanation": "Contoh slide dosen UNRAM: Superclass Poligon menaungi SegiEmpat dan SegiTiga. Sebuah array `Poligon[]` memproses ragam bentuk secara seragam melalui pemanggilan `p.display()`.",
+    "commonMistakes": "Membuat dua array terpisah untuk tiap jenis bentuk bangun datar.",
+    "sourceFile": "PBO 5 dan 6 - Abstraksi, Enkapsulasi, Pewarisan, Polymorphism (2025)_copy.pdf",
+    "sourceLocation": "Slide Halaman 83-87 (Poligon & TesPoligon)",
+    "points": 10
+  },
+  {
+    "id": "Q-72",
+    "topic": "Bab 6: Polimorfisme (Polymorphism)",
+    "subtopic": "Operator instanceof untuk Pengecekan Tipe",
+    "difficulty": "Sedang",
+    "questionType": "fill-in-the-blanks",
+    "learningObjective": "Memeriksa tipe objek runtime sebelum melakukan downcasting aman.",
+    "title": "Verifikasi Tipe Objek Menggunakan Operator instanceof",
+    "codeTemplate": "public class CekTipe {\n    public static void proses(Object obj) {\n        // Operator penguji apakah obj adalah instance dari String:\n        if (obj /* BLANK_1 */ String) {\n            // Downcasting aman:\n            String str = (/* BLANK_2 */) obj;\n            System.out.println(\"Panjang teks: \" + str.length());\n        }\n    }\n}",
+    "blankDefinitions": [
+      {
+        "id": "BLANK_1",
+        "label": "Blank 1 (Operator uji tipe)",
+        "placeholder": "operator instanceof",
+        "expectedAnswer": "instanceof",
+        "acceptedAnswers": [
+          "instanceof"
+        ],
+        "explanation": "Operator instanceof menguji apakah objek merujuk ke class atau turunan dari tipe tertentu.",
+        "points": 5
+      },
+      {
+        "id": "BLANK_2",
+        "label": "Blank 2 (Tipe target downcasting)",
+        "placeholder": "tipe String",
+        "expectedAnswer": "String",
+        "acceptedAnswers": [
+          "String"
+        ],
+        "explanation": "Casting (String) mengonversi referensi bertipe umum Object ke tipe spesifik String.",
+        "points": 5
+      }
+    ],
+    "explanation": "Operator `instanceof` mengevaluasi ke true jika objek di sisi kiri adalah instance dari class/interface di sisi kanan. Ini mencegah runtime `ClassCastException` saat downcasting.",
+    "commonMistakes": "Menulis instanceOf dengan O kapital atau melakukan downcasting tanpa verifikasi.",
+    "sourceFile": "Eng_PBO_5_6_Abstraction_Encapsulation_Inheritance_Polymorphism_copy.pdf",
+    "sourceLocation": "Slide Halaman 85-88 (The instanceof Operator)",
+    "points": 10
+  },
+  {
+    "id": "Q-73",
+    "topic": "Bab 6: Polimorfisme (Polymorphism)",
+    "subtopic": "Aturan Hak Akses Saat Method Overriding",
+    "difficulty": "Sulit",
+    "questionType": "fill-in-the-blanks",
+    "learningObjective": "Memahami bahwa modifier di subclass tidak boleh lebih terbatas dibanding superclass.",
+    "title": "Aturan Pembatasan Access Modifier pada Method Overriding",
+    "codeTemplate": "class SuperInduk {\n    public void aksi() { }\n}\n\nclass SubAnak extends SuperInduk {\n    // Method overriding TIDAK BOLEH mempersempit hak akses menjadi protected atau private!\n    // Method WAJIB memiliki modifier:\n    /* BLANK_1 */ void /* BLANK_2 */() {\n        System.out.println(\"Aksi anak\");\n    }\n}",
+    "blankDefinitions": [
+      {
+        "id": "BLANK_1",
+        "label": "Blank 1 (Modifier hak akses)",
+        "placeholder": "modifier public",
+        "expectedAnswer": "public",
+        "acceptedAnswers": [
+          "public"
+        ],
+        "explanation": "Karena method parent bertipe public, method override di subclass WAJIB public juga.",
+        "points": 5
+      },
+      {
+        "id": "BLANK_2",
+        "label": "Blank 2 (Nama method)",
+        "placeholder": "nama method aksi",
+        "expectedAnswer": "aksi",
+        "acceptedAnswers": [
+          "aksi"
+        ],
+        "explanation": "Nama method override harus identik (aksi).",
+        "points": 5
+      }
+    ],
+    "explanation": "Aturan Overriding Java melarang pengetatan hak akses (cannot reduce visibility). Jika parent method adalah `public`, subclass tidak boleh mengubahnya menjadi `protected`, package-private, atau `private`.",
+    "commonMistakes": "Mencoba mengubah method public superclass menjadi protected di subclass.",
+    "sourceFile": "PBO 5 dan 6 - Abstraksi, Enkapsulasi, Pewarisan, Polymorphism (2025)_copy.pdf",
+    "sourceLocation": "Slide Halaman 79-81 (Overriding Visibility Rules)",
+    "points": 10
+  },
+  {
+    "id": "Q-74",
+    "topic": "Bab 6: Polimorfisme (Polymorphism)",
+    "subtopic": "Downcasting Aman Objek Referensi",
+    "difficulty": "Sulit",
+    "questionType": "fill-in-the-blanks",
+    "learningObjective": "Melakukan eksplisit downcasting agar dapat memanggil method spesifik subclass.",
+    "title": "Eksplisit Downcasting untuk Mengakses Method Khusus SepedaGunung",
+    "codeTemplate": "class Sepeda { }\nclass SepedaGunung extends Sepeda {\n    public void pasangSadelTinggi() { System.out.println(\"Sadel disetel\"); }\n}\n\npublic class TesDowncast {\n    public static void main(String[] args) {\n        Sepeda s = new SepedaGunung(); // Upcasting implisit\n        // Untuk memanggil method spesifik pasangSadelTinggi(), s harus di-downcast:\n        SepedaGunung sg = (/* BLANK_1 */) s;\n        sg./* BLANK_2 */();\n    }\n}",
+    "blankDefinitions": [
+      {
+        "id": "BLANK_1",
+        "label": "Blank 1 (Tipe target downcast)",
+        "placeholder": "tipe SepedaGunung",
+        "expectedAnswer": "SepedaGunung",
+        "acceptedAnswers": [
+          "SepedaGunung"
+        ],
+        "explanation": "Casting (SepedaGunung) s memberitahu compiler untuk memperlakukan s sebagai objek SepedaGunung.",
+        "points": 5
+      },
+      {
+        "id": "BLANK_2",
+        "label": "Blank 2 (Method khusus subclass)",
+        "placeholder": "method spesifik",
+        "expectedAnswer": "pasangSadelTinggi",
+        "acceptedAnswers": [
+          "pasangSadelTinggi"
+        ],
+        "explanation": "pasangSadelTinggi() adalah method yang hanya ada di subclass SepedaGunung.",
+        "points": 5
+      }
+    ],
+    "explanation": "Variabel bertipe superclass `Sepeda s` hanya dapat memanggil method yang dideklarasikan di class `Sepeda`. Agar method khusus subclass dapat dipanggil, diperlukan explicit downcast `(SepedaGunung) s`.",
+    "commonMistakes": "Mencoba memanggil s.pasangSadelTinggi() langsung tanpa melakukan downcast terlebih dahulu.",
+    "sourceFile": "PBO 5 dan 6 - Abstraksi, Enkapsulasi, Pewarisan, Polymorphism (2025)_copy.pdf",
+    "sourceLocation": "Slide Halaman 85-88 (Object Casting)",
+    "points": 10
+  }
+];
