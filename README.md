@@ -1,6 +1,6 @@
 # Java PBO Learning & Exam Simulator
 
-Simulator pembelajaran interaktif dan persiapan ujian **Pemrograman Berorientasi Objek (PBO / OOP)** berbasis materi ajar perkuliahan Teknik Informatika Universitas Mataram (UNRAM).
+Simulator pembelajaran interaktif dan persiapan ujian **Pemrograman Berorientasi Objek (PBO / OOP)**
 
 Aplikasi ini berfokus pada format soal ujian **Fill in the Blanks**, yaitu melengkapi potongan kode Java yang sengaja dikosongkan pada baris-baris krusial (kata kunci, identifier, pemanggilan method, konstruktor, inheritance, anotasi `@Override`, dan polimorfisme).
 
@@ -9,9 +9,7 @@ Aplikasi ini berfokus pada format soal ujian **Fill in the Blanks**, yaitu melen
 ## 🌟 Fitur Utama
 
 1. **Audit & Akurasi Akademik 100% dari Slide Kuliah**:
-   - Seluruh materi dan bank soal diindeks langsung dari 8 dokumen slide perkuliahan resmi (total 509 halaman slide).
-   - Setiap soal dilengkapi referensi file sumber dan nomor slide.
-   - Dokumentasi inventarisasi lengkap tersedia di [`docs/MATERIAL_INVENTORY.md`](docs/MATERIAL_INVENTORY.md).
+   - Seluruh materi dan bank soal diindeks langsung dari berbagai sumber.
 
 2. **Komponen Fill in the Blanks Interaktif**:
    - Bagian kosong (`/* BLANK_X */`) digantikan dengan input teks langsung di dalam baris kode Java.
